@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}" dir="{{ dir }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ t.academy }}{% endblock %}</title>
+<meta name="description" content="{{ t.hero_p }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script>
+  // Flags set before first paint: JS on, and whether the browser supports cross-page View Transitions.
+  document.documentElement.classList.add('js', 'onpagereveal' in window ? 'vt' : 'no-vt');
+</script>
+<link rel="expect" href="#page-end" blocking="render">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230f4c3a' stroke='%23b8923a' stroke-width='3'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23d4b46a' font-family='serif'%3E%D9%85%3C/text%3E%3C/svg%3E">
+<script type="speculationrules">
+  {"prefetch": [{"where": {"and": [{"href_matches": "/*"}, {"not": {"href_matches": "/lang/*"}}]}, "eagerness": "moderate"}]}
+</script>
+</head>
+<body>
+<div id="loader" aria-hidden="true"></div>
+<header class="topbar">
+  <div class="wrap bar-in">
+    <a class="logo" href="{{ url_for('index') }}">
+      {% if ch.avatar %}<img src="{{ ch.avatar }}" alt="">{% else %}<span class="logo-mark">م</span>{% endif %}
+      <span>{{ t.academy }}</span>
+    </a>
+    <button class="menu-btn" aria-label="menu" onclick="document.body.classList.toggle('nav-open')">☰</button>
+    <nav class="nav">
+      <a href="{{ url_for('courses') }}">{{ t.courses }}</a>
+      <a href="{{ url_for('latest') }}">{{ t.latest }}</a>
+      <a href="{{ url_for('shorts') }}">{{ t.shorts }}</a>
+      <a href="{{ url_for('about') }}">{{ t.about }}</a>
+      <a class="lang" data-lang-switch href="{{ url_for('set_lang', code='en' if lang == 'ar' else 'ar') }}">{{ 'EN' if lang == 'ar' else 'عربي' }}</a>
+      <a class="cta" href="{{ ch.url or '#' }}?sub_confirmation=1" target="_blank" rel="noopener">{{ t.subscribe }}</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+{% if not_found %}
+  <section class="wrap empty"><h1>404</h1><p><a href="{{ url_for('index') }}">{{ t.home }}</a></p></section>
+{% else %}
+  {% if not has_data %}<div class="wrap warn">{{ t.nodata }}</div>{% endif %}
+  {% block content %}{% endblock %}
+{% endif %}
+<div id="page-end"></div>
+</main>
+
+<footer class="footer pattern">
+  <div class="wrap foot-in">
+    <div><b class="foot-logo">{{ t.academy }}</b><p>{{ t.ayah_ref }} — <span class="ayah-inline">﴿{{ t.ayah }}﴾</span></p></div>
+    <div class="foot-links">
+      <a href="{{ url_for('courses') }}">{{ t.courses }}</a>
+      <a href="{{ url_for('latest') }}">{{ t.latest }}</a>
+      <a href="{{ url_for('shorts') }}">{{ t.shorts }}</a>
+      <a href="{{ ch.url or '#' }}" target="_blank" rel="noopener">YouTube</a>
+    </div>
+  </div>
+  <div class="wrap copy">© {{ ch.name_ar if lang == 'ar' else ch.name }} · {{ t.footer }}</div>
+</footer>
+<script>window.I18N = {completed: "{{ t.completed }}", of: "{{ t.of }}", not_started: "{{ t.not_started }}", mark: "{{ t.mark }}", marked: "{{ t.marked }}", continue: "{{ t.continue }}", lesson: "{{ t.lesson }}"};</script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

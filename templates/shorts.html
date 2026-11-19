@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% from "_macros.html" import short_card with context %}
+{% block title %}{{ t.shorts }} · {{ t.academy }}{% endblock %}
+{% block content %}
+<section class="page-head pattern"><div class="wrap"><h1>{{ t.shorts }}</h1></div></section>
+<section><div class="wrap"><div class="shorts-grid">{% for v in shorts %}{{ short_card(v) }}{% endfor %}</div></div></section>
+{% endblock %}

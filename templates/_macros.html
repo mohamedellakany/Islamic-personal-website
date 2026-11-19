@@ -1,0 +1,31 @@
+{% macro course_card(p, hidden=False) %}
+<a class="course" href="{{ url_for('course', pid=p.id) }}" data-cat="{{ p.category }}"{% if hidden %} hidden{% endif %} data-progress="{{ p.id }}" data-count="{{ p.count }}">
+  <div class="course-top">
+    <span class="chip chip-{{ p.category }}">{{ CATS[p.category][lang] }}</span>
+    <small>{{ p.count }} {{ t.lessons }}</small>
+  </div>
+  <div class="course-thumb"><img loading="lazy" src="{{ p.videos[0].id|thumb }}" alt=""><span class="course-ic">{{ CATS[p.category].icon }}</span></div>
+  <h3 class="clamp">{{ p.title }}</h3>
+  <div class="bar"><i style="width:0"></i></div>
+  <small class="progress-text">{{ t.not_started }}</small>
+</a>
+{% endmacro %}
+
+{% macro video_card(v, p=None) %}
+<a class="vid" href="{{ url_for('watch', vid=v.id, list=p.id if p else v.playlist) }}" data-vid="{{ v.id }}">
+  <div class="vid-thumb">
+    <img loading="lazy" src="{{ v.id|thumb }}" alt="">
+    {% if v.duration %}<span class="dur">{{ v.duration|dur }}</span>{% endif %}
+    <span class="done-badge">✓</span>
+    {% if v.new %}<span class="new-badge">{{ t.new }}</span>{% endif %}
+  </div>
+  <h4 class="clamp">{{ v.title }}</h4>
+  {% if p %}<small>{{ p.title }}{% if v.num %} · {{ v.num }}{% endif %}</small>{% endif %}
+</a>
+{% endmacro %}
+
+{% macro short_card(v) %}
+<a class="short" href="https://www.youtube.com/shorts/{{ v.id }}" target="_blank" rel="noopener" style="background-image:url({{ v.id|thumb('hq') }})">
+  <span class="clamp">{{ v.title }}</span>
+</a>
+{% endmacro %}

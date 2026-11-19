@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% from "_macros.html" import video_card with context %}
+{% block title %}{{ t.latest }} · {{ t.academy }}{% endblock %}
+{% block content %}
+<section class="page-head pattern"><div class="wrap"><h1>{{ t.latest }}</h1></div></section>
+<section><div class="wrap"><div class="grid g4">{% for v in videos %}{{ video_card(v) }}{% endfor %}</div></div></section>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ v.title or t.lesson }} · {{ t.academy }}{% endblock %}
+{% block content %}
+<section class="watch wrap">
+  <div class="player-col">
+    <div class="player" data-vt-media style="view-transition-name: media"><iframe src="https://www.youtube-nocookie.com/embed/{{ v.id }}?rel=0&modestbranding=1" title="{{ v.title }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+    {% if p %}<a class="crumb" href="{{ url_for('course', pid=p.id) }}">{{ t.series }}: {{ p.title }}</a>{% endif %}
+    <h1>{{ v.title }}</h1>
+    <div class="actions">
+      <button id="mark" class="btn gold" data-vid="{{ v.id }}" data-pl="{{ p.id if p else '' }}">{{ t.mark }}</button>
+      <a class="btn line" href="https://www.youtube.com/watch?v={{ v.id }}" target="_blank" rel="noopener">{{ t.watch_yt }}</a>
+    </div>
+    {% if p %}
+    <div class="pn">
+      {% if prev_v %}<a href="{{ url_for('watch', vid=prev_v.id, list=p.id) }}"><small>{{ t.prev }}</small><span class="clamp">{{ prev_v.title }}</span></a>{% else %}<span></span>{% endif %}
+      {% if next_v %}<a class="nx" href="{{ url_for('watch', vid=next_v.id, list=p.id) }}"><small>{{ t.next }}</small><span class="clamp">{{ next_v.title }}</span></a>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+  {% if p %}
+  <aside class="side">
+    <h3>{{ p.title }}</h3>
+    <div class="bar" data-progress="{{ p.id }}" data-count="{{ p.count }}"><i style="width:0"></i></div>
+    <ol class="lesson-list compact" data-pl="{{ p.id }}">
+      {% for x in p.videos %}
+      <li data-vid="{{ x.id }}" class="{{ 'current' if x.id == v.id }}">
+        <a href="{{ url_for('watch', vid=x.id, list=p.id) }}"><span class="n">{{ x.num or loop.index }}</span><span class="lt clamp">{{ x.title }}</span><span class="tick">✓</span></a>
+      </li>
+      {% endfor %}
+    </ol>
+  </aside>
+  {% endif %}
+</section>
+{% endblock %}
+{% block scripts %}<script>
+saveLast({vid: "{{ v.id }}", pl: "{{ p.id if p else '' }}", title: {{ v.title|tojson }}});
+const cur = document.querySelector('.side .current'), box = document.querySelector('.side .lesson-list');
+if (cur && box) box.scrollTop = cur.offsetTop - box.offsetTop - box.clientHeight / 2;
+</script>{% endblock %}

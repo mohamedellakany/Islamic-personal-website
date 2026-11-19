@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "_macros.html" import video_card with context %}
+{% block title %}{{ t.search }}: {{ q }}{% endblock %}
+{% block content %}
+<section class="page-head pattern">
+  <div class="wrap">
+    <form class="search" action="{{ url_for('search') }}"><input name="q" value="{{ q }}" placeholder="{{ t.search_ph }}" autofocus><button>{{ t.search }}</button></form>
+    {% if q %}<p class="light">{{ t.results_for }} «{{ q }}» — {{ results|length }}</p>{% endif %}
+  </div>
+</section>
+<section>
+  <div class="wrap">
+    <div class="grid g4">{% for v, p in results %}{{ video_card(v, p) }}{% endfor %}</div>
+    {% if q and not results %}<p class="muted center">{{ t.no_results }}</p>{% endif %}
+  </div>
+</section>
+{% endblock %}

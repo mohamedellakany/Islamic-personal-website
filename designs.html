@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dr. Moustafa Kamel — Website Design Concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;600;700&family=Reem+Kufi:wght@500;700&family=Cormorant+Garamond:wght@500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:#e9e9ee}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+
+/* ---------- concept switcher ---------- */
+.switcher{position:sticky;top:0;z-index:100;background:#111;color:#fff;display:flex;gap:8px;align-items:center;padding:10px 20px;direction:ltr;font-family:Inter,sans-serif;font-size:14px;flex-wrap:wrap}
+.switcher b{margin-right:12px;opacity:.7;font-weight:600}
+.switcher button{background:#2a2a2a;color:#fff;border:0;padding:8px 14px;border-radius:6px;cursor:pointer;font:inherit}
+.switcher button.on{background:#c9a54b;color:#111;font-weight:600}
+.concept{display:none}
+.concept.on{display:block}
+.note{direction:ltr;font-family:Inter,sans-serif;background:#fffbe6;border-bottom:1px solid #e8dca0;padding:14px 24px;font-size:14px;color:#4a4020;line-height:1.6}
+.note strong{color:#111}
+
+/* shared bits */
+.wrap{max-width:1200px;margin:0 auto;padding:0 28px}
+.grid{display:grid;gap:22px}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.g3,.g4{grid-template-columns:1fr}}
+.thumb{aspect-ratio:16/9;object-fit:cover;width:100%}
+.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* =========================================================
+   CONCEPT A — "Al-Makhtūta" (Manuscript): classic & warm
+   ========================================================= */
+#A{--green:#0f4c3a;--gold:#b8923a;--paper:#f7f1e3;--ink:#2b2418;background:var(--paper);color:var(--ink)}
+#A .pattern{background-color:var(--green);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23b8923a' stroke-opacity='.22' stroke-width='1'%3E%3Cpath d='M40 0l11.7 28.3L80 40 51.7 51.7 40 80 28.3 51.7 0 40l28.3-11.7z'/%3E%3Ccircle cx='40' cy='40' r='12'/%3E%3C/g%3E%3C/svg%3E")}
+#A header{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+#A .logo{display:flex;align-items:center;gap:12px;color:#fff}
+#A .logo img{width:52px;height:52px;border-radius:50%;border:2px solid var(--gold)}
+#A .logo b{font-family:Amiri,serif;font-size:26px;display:block;line-height:1}
+#A .logo small{color:#e6d3a3;font-size:12px}
+#A nav{display:flex;gap:26px;color:#f0e6cc;font-size:15px}
+#A nav a:hover{color:var(--gold)}
+#A .lang{border:1px solid var(--gold);color:var(--gold);padding:4px 10px;border-radius:4px;font-family:Inter;font-size:12px}
+#A .hero{color:#fff;text-align:center;padding:70px 0 110px}
+#A .bism{font-family:Amiri,serif;color:var(--gold);font-size:30px;margin-bottom:18px}
+#A .hero h1{font-family:Amiri,serif;font-size:58px;line-height:1.3;font-weight:700}
+#A .hero p{max-width:640px;margin:18px auto 30px;color:#e9dfc6;font-size:18px;line-height:1.9}
+#A .btn{display:inline-block;padding:13px 30px;border-radius:40px;font-weight:600;margin:0 6px}
+#A .btn.gold{background:var(--gold);color:#1a1408}
+#A .btn.line{border:1.5px solid #e6d3a3;color:#fff}
+#A .stats{display:flex;justify-content:center;gap:0;margin:-50px auto 0;max-width:760px;background:#fff;border:1px solid #e7dcc0;border-radius:14px;box-shadow:0 18px 40px -20px rgba(0,0,0,.3);position:relative}
+#A .stats div{flex:1;text-align:center;padding:24px 10px;border-left:1px solid #eee3c9}
+#A .stats div:last-child{border-left:0}
+#A .stats b{font-family:Amiri,serif;font-size:34px;color:var(--green);display:block}
+#A .stats span{font-size:13px;color:#7a6a48}
+#A section{padding:80px 0}
+#A .sec-title{text-align:center;margin-bottom:44px}
+#A .sec-title h2{font-family:Amiri,serif;font-size:40px;color:var(--green)}
+#A .sec-title .orn{color:var(--gold);letter-spacing:8px;margin-top:6px}
+#A .path{background:#fff;border:1px solid #e7dcc0;border-radius:12px;padding:28px;position:relative;overflow:hidden;transition:.25s}
+#A .path:hover{transform:translateY(-4px);box-shadow:0 14px 30px -18px rgba(15,76,58,.5)}
+#A .path .ic{width:54px;height:54px;border-radius:50%;background:var(--green);color:var(--gold);display:grid;place-items:center;font-family:Amiri;font-size:26px;margin-bottom:16px}
+#A .path h3{font-family:Amiri,serif;font-size:25px;color:var(--green);margin-bottom:6px}
+#A .path p{font-size:14px;color:#6b5c40;line-height:1.8}
+#A .path .cnt{margin-top:14px;font-size:13px;color:var(--gold);font-weight:600}
+#A .vid{background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e7dcc0}
+#A .vid .meta{padding:14px 16px}
+#A .vid .tag{font-size:12px;color:var(--gold);font-weight:600}
+#A .vid h4{font-size:15px;line-height:1.7;margin-top:4px}
+#A .feature{display:grid;grid-template-columns:1.3fr 1fr;gap:34px;align-items:center}
+#A .feature iframe,#A .feature .ph{width:100%;aspect-ratio:16/9;border-radius:12px;border:0}
+#A .ayah{background:var(--green);color:#fff;border-radius:16px;padding:46px;text-align:center}
+#A .ayah q{font-family:Amiri,serif;font-size:32px;line-height:2;quotes:"﴿" "﴾";color:#fff}
+#A .ayah q::before,#A .ayah q::after{color:var(--gold)}
+#A .ayah cite{display:block;color:var(--gold);margin-top:10px;font-style:normal}
+#A footer{padding:40px 0;color:#e6d3a3;text-align:center;font-size:14px}
+
+/* =========================================================
+   CONCEPT B — "Academy": modern learning platform
+   ========================================================= */
+#B{--ink:#0d1b2a;--em:#0e9f6e;--soft:#f4f7f6;background:#fff;color:var(--ink)}
+#B header{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid #eef1f0}
+#B .logo{display:flex;gap:10px;align-items:center;font-weight:700;font-size:19px}
+#B .logo img{width:40px;height:40px;border-radius:10px}
+#B nav{display:flex;gap:24px;font-size:15px;color:#4b5a68}
+#B .cta{background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:600}
+#B .hero{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;padding:60px 0}
+#B .pill{display:inline-flex;gap:8px;align-items:center;background:#e7f7f0;color:var(--em);padding:6px 12px;border-radius:30px;font-size:13px;font-weight:600}
+#B .pill i{width:8px;height:8px;border-radius:50%;background:var(--em);display:inline-block}
+#B h1{font-size:50px;line-height:1.35;margin:18px 0;font-weight:700}
+#B h1 em{font-style:normal;color:var(--em)}
+#B .hero p{font-size:17px;color:#55636f;line-height:1.9;max-width:520px}
+#B .search{display:flex;margin-top:28px;border:1.5px solid #dfe5e3;border-radius:14px;overflow:hidden;max-width:520px}
+#B .search input{flex:1;border:0;padding:15px 18px;font:inherit;outline:0}
+#B .search button{background:var(--em);color:#fff;border:0;padding:0 22px;font:inherit;font-weight:600}
+#B .hero-card{background:var(--soft);border-radius:22px;padding:18px;position:relative}
+#B .hero-card img{border-radius:14px}
+#B .hero-card .now{position:absolute;bottom:-18px;right:30px;left:30px;background:#fff;border-radius:14px;padding:14px 18px;box-shadow:0 14px 30px -12px rgba(13,27,42,.25);display:flex;gap:12px;align-items:center;font-size:14px}
+#B .play{width:40px;height:40px;flex:none;border-radius:50%;background:var(--em);color:#fff;display:grid;place-items:center}
+#B section{padding:64px 0}
+#B .head{display:flex;justify-content:space-between;align-items:end;margin-bottom:26px}
+#B .head h2{font-size:30px}
+#B .head a{color:var(--em);font-weight:600;font-size:14px}
+#B .course{border:1px solid #e8eceb;border-radius:18px;padding:22px;transition:.2s}
+#B .course:hover{border-color:var(--em);box-shadow:0 10px 30px -18px rgba(14,159,110,.6)}
+#B .course .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+#B .chip{font-size:12px;padding:4px 10px;border-radius:20px;font-weight:600}
+#B .course h3{font-size:19px;margin-bottom:6px}
+#B .course p{font-size:14px;color:#66737e;line-height:1.7}
+#B .bar{height:7px;background:#eef1f0;border-radius:6px;margin:18px 0 8px;overflow:hidden}
+#B .bar i{display:block;height:100%;background:var(--em);border-radius:6px}
+#B .course small{color:#88949d;font-size:12px}
+#B .tabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap}
+#B .tabs span{padding:8px 16px;border-radius:30px;background:var(--soft);font-size:14px;cursor:pointer}
+#B .tabs span.on{background:var(--ink);color:#fff}
+#B .vid img{border-radius:14px}
+#B .vid h4{font-size:15px;line-height:1.7;margin-top:10px}
+#B .vid small{color:#88949d}
+#B .shorts{display:flex;gap:16px;overflow:auto;padding-bottom:6px}
+#B .short{flex:none;width:170px;aspect-ratio:9/16;border-radius:16px;background-size:cover;background-position:center;position:relative;color:#fff;display:flex;align-items:end;padding:12px;font-size:13px;font-weight:600}
+#B .short::before{content:"";position:absolute;inset:0;border-radius:16px;background:linear-gradient(transparent 45%,rgba(0,0,0,.8))}
+#B .short span{position:relative}
+#B .band{background:var(--ink);color:#fff;border-radius:24px;padding:44px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+#B .band h3{font-size:28px}
+#B .band p{color:#a9b7c4;margin-top:6px}
+#B .band .cta{background:var(--em)}
+#B footer{border-top:1px solid #eef1f0;padding:30px 0;color:#88949d;font-size:14px;text-align:center}
+
+/* =========================================================
+   CONCEPT C — "Layl" (Night): cinematic & contemplative
+   ========================================================= */
+#C{--bg:#0b1020;--card:#141a30;--gold:#e2b857;--txt:#e9e6dd;background:var(--bg);color:var(--txt)}
+#C header{display:flex;justify-content:space-between;align-items:center;padding:22px 0}
+#C .logo{font-family:'Reem Kufi',sans-serif;font-size:22px;color:var(--gold)}
+#C nav{display:flex;gap:26px;font-size:14px;color:#9aa1b9}
+#C .hero{position:relative;min-height:600px;display:flex;align-items:center;overflow:hidden}
+#C .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 25% 30%,rgba(226,184,87,.18),transparent 45%),radial-gradient(circle at 80% 80%,rgba(70,90,200,.22),transparent 50%)}
+#C .stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 10% 20%,#fff8,transparent),radial-gradient(1px 1px at 30% 70%,#fff6,transparent),radial-gradient(1.5px 1.5px at 60% 15%,#fff9,transparent),radial-gradient(1px 1px at 85% 40%,#fff7,transparent),radial-gradient(1px 1px at 45% 50%,#fff5,transparent),radial-gradient(1.5px 1.5px at 72% 82%,#fff8,transparent),radial-gradient(1px 1px at 18% 85%,#fff6,transparent)}
+#C .moon{position:absolute;left:8%;top:18%;width:240px;height:240px;border-radius:50%;box-shadow:-34px 18px 0 0 var(--gold);transform:rotate(-20deg);opacity:.9;filter:drop-shadow(0 0 40px rgba(226,184,87,.4))}
+#C .hero .in{position:relative;max-width:640px}
+#C .kick{font-family:Inter;letter-spacing:4px;font-size:12px;color:var(--gold);direction:ltr;text-align:right}
+#C h1{font-family:'Reem Kufi',sans-serif;font-size:62px;line-height:1.3;margin:14px 0}
+#C .hero p{color:#aab0c6;font-size:18px;line-height:1.9}
+#C .btns{margin-top:30px;display:flex;gap:12px}
+#C .btn{padding:14px 26px;border-radius:12px;font-weight:600}
+#C .btn.g{background:var(--gold);color:#16120a}
+#C .btn.o{border:1px solid #39406a}
+#C section{padding:80px 0}
+#C h2{font-family:'Reem Kufi',sans-serif;font-size:34px;margin-bottom:8px}
+#C .sub{color:#8a91ab;margin-bottom:34px}
+#C .times{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+#C .time{border-radius:22px;padding:34px;min-height:260px;display:flex;flex-direction:column;justify-content:end;position:relative;overflow:hidden}
+#C .time.fajr{background:linear-gradient(160deg,#f3b77a 0%,#7b5ea7 55%,#1d2550 100%)}
+#C .time.isha{background:linear-gradient(160deg,#1a2350 0%,#0d1230 60%,#060914 100%);border:1px solid #2a3260}
+#C .time h3{font-family:'Reem Kufi';font-size:32px}
+#C .time p{opacity:.85;margin-top:6px}
+#C .time .n{position:absolute;top:26px;left:30px;font-family:Inter;font-size:13px;background:#0005;padding:6px 12px;border-radius:20px}
+#C .card{background:var(--card);border-radius:16px;overflow:hidden;border:1px solid #1f2745;transition:.25s}
+#C .card:hover{border-color:var(--gold)}
+#C .card .m{padding:16px}
+#C .card h4{font-size:15px;line-height:1.7}
+#C .card small{color:var(--gold);font-size:12px}
+#C .series{display:flex;gap:14px;flex-wrap:wrap}
+#C .series a{background:var(--card);border:1px solid #232b4d;padding:12px 18px;border-radius:40px;font-size:14px}
+#C .series a b{color:var(--gold);font-family:Inter;margin-right:8px;font-size:12px}
+#C .quote{text-align:center;padding:90px 0;background:linear-gradient(#0b1020,#11183a,#0b1020)}
+#C .quote q{font-family:Amiri,serif;font-size:36px;line-height:2;quotes:"﴿" "﴾"}
+#C .quote cite{display:block;color:var(--gold);font-style:normal;margin-top:10px}
+#C footer{padding:36px 0;text-align:center;color:#6b7290;font-size:14px;border-top:1px solid #1b2240}
+@media(max-width:900px){#B .hero,#A .feature,#C .times{grid-template-columns:1fr}#A nav,#B nav,#C nav{display:none}#A .hero h1{font-size:40px}#B h1,#C h1{font-size:38px}}
+</style>
+</head>
+<body>
+
+<div class="switcher">
+  <b>DESIGN CONCEPTS →</b>
+  <button class="on" data-c="A">A · Manuscript (Classic)</button>
+  <button data-c="B">B · Academy (Modern)</button>
+  <button data-c="C">C · Night (Cinematic)</button>
+</div>
+
+<!-- ===================================================== A -->
+<div class="concept on" id="A">
+  <div class="note"><strong>Concept A: "Al-Makhtūta" (Manuscript).</strong> Warm and scholarly, like a classical Islamic book. Deep green, gold, and cream paper, with Amiri calligraphic type and a geometric star pattern. Feels trustworthy and traditional. Good for an older audience and for the Tafsir and Bukhari series.</div>
+  <div class="pattern">
+    <div class="wrap">
+      <header>
+        <div class="logo"><img src="https://yt3.googleusercontent.com/ytc/AIdro_nFI701EpWUnJghxeo_xGIq2cgiEgSm934Cpj_4bUFH29A=s176-c-k-c0x00ffffff-no-rj" alt=""><div><b>د. مصطفى كامل</b><small>دروس في القرآن والحديث والفقه والسيرة</small></div></div>
+        <nav><a href="#">الرئيسية</a><a href="#">السلاسل</a><a href="#">التفسير</a><a href="#">شرح البخاري</a><a href="#">الشمائل</a><a href="#">عن الدكتور</a></nav>
+        <span class="lang">EN</span>
+      </header>
+      <div class="hero">
+        <div class="bism">بسم الله الرحمن الرحيم</div>
+        <h1>تعلَّم القرآن وافهم دينك<br>في حياتك اليومية</h1>
+        <p>دروس مبسطة في قراءة القرآن بالتجويد وتفسيره آية بآية، وشرح صحيح الإمام البخاري حديثاً حديثاً، وموسوعة شمائل المصطفى ﷺ.</p>
+        <a class="btn gold" href="#">ابدأ التعلم الآن</a>
+        <a class="btn line" href="#">▶ أحدث درس</a>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="stats">
+      <div><b>+٣٬٩٠٠</b><span>درس ومقطع</span></div>
+      <div><b>+٩٣٨</b><span>حديث من صحيح البخاري</span></div>
+      <div><b>٧٧</b><span>سورة مفسَّرة</span></div>
+      <div><b>+٣٠</b><span>سلسلة علمية</span></div>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-title"><h2>مسارات التعلُّم</h2><div class="orn">✦ ✦ ✦</div></div>
+      <div class="grid g3">
+        <a class="path" href="#"><div class="ic">ق</div><h3>التجويد والتفسير</h3><p>كيف نقرأ السورة وتفسيرها، من سورة الملك إلى سورة التحريم.</p><div class="cnt">٧٧ درساً ←</div></a>
+        <a class="path" href="#"><div class="ic">ح</div><h3>شرح صحيح البخاري</h3><p>شرح الأحاديث حديثاً حديثاً بأسلوب سهل مع الفوائد العملية.</p><div class="cnt">+٩٣٨ درساً ←</div></a>
+        <a class="path" href="#"><div class="ic">ش</div><h3>شمائل المصطفى ﷺ</h3><p>موسوعة في أخلاق النبي ﷺ وصفاته ورحمته بأهله وأصحابه.</p><div class="cnt">٥٦ درساً ←</div></a>
+        <a class="path" href="#"><div class="ic">ف</div><h3>فقه العبادات</h3><p>أحكام الطهارة والصلاة والزكاة والصيام بأسلوب سؤال وجواب.</p><div class="cnt">سلسلة كاملة ←</div></a>
+        <a class="path" href="#"><div class="ic">خ</div><h3>خواطر الفجر والعشاء</h3><p>وقفات يومية قصيرة وقصص وقضايا من واقع الحياة.</p><div class="cnt">٥٣ خاطرة ←</div></a>
+        <a class="path" href="#"><div class="ic">س</div><h3>السيرة النبوية</h3><p>الهجرة، الإسراء والمعراج، رمضان كما عاشه رسول الله ﷺ.</p><div class="cnt">سلاسل متعددة ←</div></a>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:#efe6d0">
+    <div class="wrap">
+      <div class="sec-title"><h2>أحدث الدروس</h2><div class="orn">✦ ✦ ✦</div></div>
+      <div class="feature" style="margin-bottom:34px">
+        <img class="ph" src="https://i.ytimg.com/vi/OuDONrQacbY/hqdefault.jpg" alt="" style="object-fit:cover">
+        <div><span style="color:var(--gold);font-weight:600">التفسير · الدرس ٧٧</span><h3 style="font-family:Amiri;font-size:34px;color:var(--green);margin:8px 0 12px;line-height:1.4">كيف نقرأ سورة التحريم وتفسيرها</h3><p style="line-height:1.9;color:#6b5c40">قراءة صحيحة بالتجويد مع شرح المعاني والوقفات التربوية للسورة.</p><a class="btn gold" href="#" style="margin:20px 0 0">▶ شاهد الدرس</a></div>
+      </div>
+      <div class="grid g4">
+        <div class="vid"><img class="thumb" src="https://i.ytimg.com/vi/OLGMU1pWhUU/hqdefault.jpg" alt=""><div class="meta"><span class="tag">الشمائل · ٥٦</span><h4 class="clamp">موسوعة شمائل المصطفى ﷺ (رحمته بأقاربه)</h4></div></div>
+        <div class="vid"><img class="thumb" src="https://i.ytimg.com/vi/QM1SB080jB8/hqdefault.jpg" alt=""><div class="meta"><span class="tag">البخاري · ٩٣٨</span><h4 class="clamp">باب قوله تعالى (فإذا طعمتم فانتشروا)</h4></div></div>
+        <div class="vid"><img class="thumb" src="https://i.ytimg.com/vi/dnCHDUjqBmY/hqdefault.jpg" alt=""><div class="meta"><span class="tag">التفسير · ٧٦</span><h4 class="clamp">كيف نقرأ سورة الملك وفضلها وتفسيرها</h4></div></div>
+        <div class="vid"><img class="thumb" src="https://i.ytimg.com/vi/KWWBJl8ZY7s/hqdefault.jpg" alt=""><div class="meta"><span class="tag">يتحدث عن نفسه · ٢٣</span><h4 class="clamp">الرسول ﷺ يتحدث عن نفسه (فلا تبرحوا حتى أرسل إليكم)</h4></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap"><div class="ayah"><q>وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا</q><cite>سورة المزمل · ٤</cite></div></div>
+  </section>
+  <footer class="pattern"><div class="wrap">© د. مصطفى كامل · يوتيوب · فيسبوك · واتساب · اشترك في القناة</div></footer>
+</div>
+
+<!-- ===================================================== B -->
+<div class="concept" id="B">
+  <div class="note"><strong>Concept B: "Academy" (modern learning platform).</strong> Clean and bright. It treats the 3,900 videos like structured <em>courses</em>, with progress bars, search, topic filters, and a Shorts strip. IBM Plex Sans Arabic type. Good for students who want to follow a series in order and find a specific hadith or surah fast.</div>
+  <div class="wrap">
+    <header>
+      <div class="logo"><img src="https://yt3.googleusercontent.com/ytc/AIdro_nFI701EpWUnJghxeo_xGIq2cgiEgSm934Cpj_4bUFH29A=s176-c-k-c0x00ffffff-no-rj" alt="">أكاديمية د. مصطفى كامل</div>
+      <nav><a href="#">الدورات</a><a href="#">أحدث الدروس</a><a href="#">المقاطع القصيرة</a><a href="#">اسأل الشيخ</a><a href="#">عن الدكتور</a></nav>
+      <a class="cta" href="#">اشترك مجاناً</a>
+    </header>
+    <div class="hero">
+      <div>
+        <span class="pill"><i></i> درس جديد كل أسبوع · مقاطع يومية</span>
+        <h1>رحلتك في <em>فهم القرآن والسنة</em> تبدأ من هنا</h1>
+        <p>أكثر من ٣٬٩٠٠ درس منظمة في مسارات واضحة: التجويد والتفسير، شرح صحيح البخاري، الشمائل، وفقه العبادات.</p>
+        <div class="search"><input placeholder="ابحث عن سورة، حديث، أو موضوع… مثال: سورة الملك"><button>بحث</button></div>
+      </div>
+      <div class="hero-card">
+        <img src="https://i.ytimg.com/vi/dnCHDUjqBmY/maxresdefault.jpg" onerror="this.src='https://i.ytimg.com/vi/dnCHDUjqBmY/hqdefault.jpg'" alt="">
+        <div class="now"><span class="play">▶</span><div><b>تابع من حيث توقفت</b><br><span style="color:#66737e">كيف نقرأ سورة الملك وتفسيرها · الدرس ٧٦</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <section style="background:var(--soft)">
+    <div class="wrap">
+      <div class="head"><h2>الدورات العلمية</h2><a href="#">كل الدورات ←</a></div>
+      <div class="grid g3">
+        <div class="course"><div class="top"><span class="chip" style="background:#e7f7f0;color:#0e9f6e">قرآن</span><small>٧٧ درساً</small></div><h3>كيف نقرأ القرآن ونفسره</h3><p>تلاوة بالتجويد وتفسير السور سورة بسورة.</p><div class="bar"><i style="width:62%"></i></div><small>أكملت ٤٨ من ٧٧</small></div>
+        <div class="course"><div class="top"><span class="chip" style="background:#fff2dc;color:#b7791f">حديث</span><small>+٩٣٨ درساً</small></div><h3>شرح صحيح البخاري</h3><p>شرح الأحاديث بالترتيب مع الفوائد والأحكام.</p><div class="bar"><i style="width:18%"></i></div><small>أكملت ١٦٩ من ٩٣٨</small></div>
+        <div class="course"><div class="top"><span class="chip" style="background:#eef0ff;color:#4f56c7">سيرة</span><small>٥٦ درساً</small></div><h3>موسوعة شمائل المصطفى ﷺ</h3><p>أخلاق النبي ﷺ وصفاته وتعامله مع أهله.</p><div class="bar"><i style="width:0"></i></div><small>لم تبدأ بعد</small></div>
+        <div class="course"><div class="top"><span class="chip" style="background:#e7f7f0;color:#0e9f6e">قرآن</span><small>٣ أجزاء</small></div><h3>برنامج حفظ ثلاثة أجزاء</h3><p>الحفظ مع التجويد والمعاني والإعراب.</p><div class="bar"><i style="width:0"></i></div><small>لم تبدأ بعد</small></div>
+        <div class="course"><div class="top"><span class="chip" style="background:#fde8e8;color:#c0392b">فقه</span><small>سلسلة</small></div><h3>فقه العبادات والزكاة</h3><p>أحكام العبادات بأسلوب سؤال وجواب.</p><div class="bar"><i style="width:0"></i></div><small>لم تبدأ بعد</small></div>
+        <div class="course"><div class="top"><span class="chip" style="background:#eef0ff;color:#4f56c7">تزكية</span><small>سلسلة</small></div><h3>تزكية النفوس</h3><p>قراءة في مختصر منهاج القاصدين.</p><div class="bar"><i style="width:0"></i></div><small>لم تبدأ بعد</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="head"><h2>أحدث الدروس</h2><a href="#">عرض الكل ←</a></div>
+      <div class="tabs"><span class="on">الكل</span><span>التفسير</span><span>البخاري</span><span>الشمائل</span><span>الخواطر</span><span>English</span></div>
+      <div class="grid g4">
+        <div class="vid"><img class="thumb" src="https://i.ytimg.com/vi/L2tYD0rBuBE/hqdefault.jpg" alt=""><h4 class="clamp">وقفات تربوية عملية مع سورة الفلق</h4><small>وقفات تربوية · ٢</small></div>
+        <div class="vid"><img class="thumb" src="https://i.ytimg.com/vi/OuDONrQacbY/hqdefault.jpg" alt=""><h4 class="clamp">كيف نقرأ سورة التحريم وتفسيرها</h4><small>التفسير · ٧٧</small></div>
+        <div class="vid"><img class="thumb" src="https://i.ytimg.com/vi/gxxVl2vVA0w/hqdefault.jpg" alt=""><h4 class="clamp">باب ما يقول إذا فرغ من الطعام · حديث ١٠٨٤</h4><small>البخاري · ٩٣٧</small></div>
+        <div class="vid"><img class="thumb" src="https://i.ytimg.com/vi/2BxXKm23sZE/hqdefault.jpg" alt=""><h4 class="clamp">شمائل المصطفى ﷺ: السيدة فاطمة الزهراء</h4><small>الشمائل · ٥٥</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="head"><h2>مقاطع قصيرة يومية</h2><a href="#">المزيد ←</a></div>
+      <div class="shorts">
+        <div class="short" style="background-image:url(https://i.ytimg.com/vi/teV01slME6o/hqdefault.jpg)"><span>فضل سورة القلم</span></div>
+        <div class="short" style="background-image:url(https://i.ytimg.com/vi/RBm89aqzqOw/hqdefault.jpg)"><span>سنة لعق الأصابع</span></div>
+        <div class="short" style="background-image:url(https://i.ytimg.com/vi/ydglkPmRN8c/hqdefault.jpg)"><span>فضل تمر العجوة</span></div>
+        <div class="short" style="background-image:url(https://i.ytimg.com/vi/nq-9eLlxOKA/hqdefault.jpg)"><span>الرطب بالقثاء</span></div>
+        <div class="short" style="background-image:url(https://i.ytimg.com/vi/KWWBJl8ZY7s/hqdefault.jpg)"><span>فلا تبرحوا</span></div>
+        <div class="short" style="background-image:url(https://i.ytimg.com/vi/OLGMU1pWhUU/hqdefault.jpg)"><span>رحمته ﷺ بأقاربه</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap"><div class="band"><div><h3>لا يفوتك أي درس جديد</h3><p>اشترك في القناة وفعّل الجرس، أو انضم لقائمة الواتساب.</p></div><a class="cta" href="#">اشترك في يوتيوب</a></div></div>
+  </section>
+  <footer>© أكاديمية د. مصطفى كامل · Arabic / English</footer>
+</div>
+
+<!-- ===================================================== C -->
+<div class="concept" id="C">
+  <div class="note"><strong>Concept C: "Layl" (Night).</strong> Dark, quiet, and cinematic: a night sky, a gold crescent, Kufi headlines. Built around the <em>Fajr and Isha reflections</em> and the evening-of-Quran mood. The most distinctive and "brand-like" option, and strong on mobile and social shares.</div>
+  <div class="wrap">
+    <header>
+      <div class="logo">د. مصطفى كامل</div>
+      <nav><a href="#">الخواطر</a><a href="#">التفسير</a><a href="#">البخاري</a><a href="#">الشمائل</a><a href="#">عن الدكتور</a><a href="#">EN</a></nav>
+    </header>
+  </div>
+  <div class="hero">
+    <div class="stars"></div><div class="moon"></div>
+    <div class="wrap" style="width:100%">
+      <div class="in">
+        <div class="kick">QUR'AN · HADITH · FIQH · SEERAH</div>
+        <h1>نورٌ يرافقك<br>من الفجر إلى العشاء</h1>
+        <p>دروس أسبوعية ومقاطع يومية للدكتور مصطفى كامل: تلاوة وتفسير، شرح البخاري، وشمائل المصطفى ﷺ.</p>
+        <div class="btns"><a class="btn g" href="#">▶ استمع لأحدث درس</a><a class="btn o" href="#">تصفح السلاسل</a></div>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <h2>خواطر اليوم</h2><p class="sub">وقفة قصيرة بعد كل صلاة، تبدأ بها يومك وتختمه.</p>
+      <div class="times">
+        <a class="time fajr" href="#"><span class="n">٣٢ خاطرة</span><h3>☀ خواطر الفجر</h3><p>بداية يومك بآية ومعنى.</p></a>
+        <a class="time isha" href="#"><span class="n">٢١ خاطرة</span><h3>☾ خواطر العشاء</h3><p>قضايا وقصص قبل النوم.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <h2>أحدث الدروس</h2><p class="sub">دروس جديدة كل أسبوع.</p>
+      <div class="grid g3">
+        <div class="card"><img class="thumb" src="https://i.ytimg.com/vi/OuDONrQacbY/hqdefault.jpg" alt=""><div class="m"><small>التفسير · ٧٧</small><h4 class="clamp">كيف نقرأ سورة التحريم وتفسيرها</h4></div></div>
+        <div class="card"><img class="thumb" src="https://i.ytimg.com/vi/OLGMU1pWhUU/hqdefault.jpg" alt=""><div class="m"><small>الشمائل · ٥٦</small><h4 class="clamp">موسوعة شمائل المصطفى ﷺ (رحمته بأقاربه)</h4></div></div>
+        <div class="card"><img class="thumb" src="https://i.ytimg.com/vi/QM1SB080jB8/hqdefault.jpg" alt=""><div class="m"><small>البخاري · ٩٣٨</small><h4 class="clamp">باب قوله تعالى (فإذا طعمتم فانتشروا)</h4></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="quote"><div class="wrap"><q>إِنَّ قُرْآنَ الْفَجْرِ كَانَ مَشْهُودًا</q><cite>سورة الإسراء · ٧٨</cite></div></div>
+
+  <section>
+    <div class="wrap">
+      <h2>السلاسل العلمية</h2><p class="sub">أكثر من ٣٠ سلسلة.</p>
+      <div class="series">
+        <a href="#"><b>938</b>شرح صحيح البخاري</a><a href="#"><b>77</b>كيف نقرأ القرآن ونفسره</a><a href="#"><b>56</b>شمائل المصطفى ﷺ</a><a href="#"><b>21</b>الرسول ﷺ يتحدث عن نفسه</a><a href="#"><b>8</b>رمضان كما عاشه ﷺ</a><a href="#">تاريخ الهجرة</a><a href="#">الإسراء والمعراج</a><a href="#">موسى عليه السلام</a><a href="#">المستثمر المسلم</a><a href="#">تزكية النفوس</a><a href="#">نظرات في سورة مريم</a><a href="#">الزكاة سؤال وجواب</a>
+      </div>
+    </div>
+  </section>
+  <footer>© د. مصطفى كامل · YouTube · اشترك وفعّل الجرس</footer>
+</div>
+
+<script>
+document.querySelectorAll('.switcher button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.switcher button,.concept').forEach(e=>e.classList.remove('on'));
+  b.classList.add('on');document.getElementById(b.dataset.c).classList.add('on');scrollTo(0,0);
+});
+</script>
+</body>
+</html>

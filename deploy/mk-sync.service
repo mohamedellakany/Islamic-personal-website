@@ -1,0 +1,8 @@
+[Unit]
+Description=Refresh YouTube channel data for the academy site
+
+[Service]
+Type=oneshot
+User=__APP_USER__
+WorkingDirectory=__APP_DIR__
+ExecStart=__APP_DIR__/.venv/bin/python sync.py

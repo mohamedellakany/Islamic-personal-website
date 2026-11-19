@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_macros.html" import course_card with context %}
+{% block title %}{{ t.courses }} · {{ t.academy }}{% endblock %}
+{% block content %}
+<section class="page-head pattern"><div class="wrap"><h1>{{ t.courses }}</h1></div></section>
+<section>
+  <div class="wrap">
+    <div data-filter data-filter-url>
+    <div class="tabs">
+      <a class="{{ 'on' if not cat }}" data-cat="" href="{{ url_for('courses') }}">{{ t.all }}</a>
+      {% for key, c in CATS.items() %}<a class="{{ 'on' if cat == key }}" data-cat="{{ key }}" href="{{ url_for('courses', cat=key) }}">{{ c[lang] }}</a>{% endfor %}
+    </div>
+    <div class="grid g3" data-filter-grid>{% for p in courses %}{{ course_card(p, hidden=cat and p.category != cat) }}{% endfor %}</div>
+    <p class="muted center" data-filter-empty hidden>{{ t.no_results }}</p>
+    </div>
+  </div>
+</section>
+{% endblock %}
