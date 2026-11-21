@@ -4,24 +4,23 @@ logLevel: info
 
 authMethod: internal
 authInternalUsers:
-  # Only the phone (with the private key) may broadcast…
-  - user: phone
-    pass: __STREAM_KEY__
-    ips: []
-    permissions:
-      - action: publish
-        path: live
-  # …everyone may watch.
+  # The phone broadcasts to ingest/<private key>; the key in the path is the password,
+  # so Larix only needs a plain rtmp://<mac-ip>:1935/ingest/<key> address.
   - user: any
     pass:
     ips: []
     permissions:
-      - action: read
+      - action: publish
+        path: ingest/__STREAM_KEY__
+      - action: read             # everyone may watch the public "live" stream
         path: live
+  # Only this Mac may read the private ingest stream (to copy it to "live") and use the API.
   - user: any
     pass:
     ips: ["127.0.0.1", "::1"]
     permissions:
+      - action: read
+        path: ingest/__STREAM_KEY__
       - action: api
 
 api: true
@@ -41,4 +40,7 @@ srt: false
 moq: false            # unused protocol; leaving it on makes MediaMTX create auto.key/auto.crt here
 
 paths:
-  live:                # the one stream: rtmp://<mac-ip>:1935/live
+  ingest/__STREAM_KEY__:   # phone → here (private)
+  live:                    # viewers ← here (public); copies the private stream while it's on air
+    source: rtmp://127.0.0.1:1935/ingest/__STREAM_KEY__
+    sourceOnDemand: no

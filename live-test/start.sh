@@ -49,7 +49,8 @@ cat <<INFO
 ══════════════════════════════════════════════════════════════
  📱 LARIX BROADCASTER (phone on the same Wi-Fi)
     Settings → Connections → New connection:
-      URL:   rtmp://$IP:1935/live?user=phone&pass=$KEY
+      URL:   rtmp://$IP:1935/ingest/$KEY
+    (Larix may also show this as  Server: rtmp://$IP:1935/ingest   Stream key: $KEY)
     Video: 1280x720, 30 fps, ~2500 kbps, landscape. Tap the red button to go live.
 
  🌐 WEBSITE
