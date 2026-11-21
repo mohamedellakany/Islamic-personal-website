@@ -1,0 +1,43 @@
+# Free local live-streaming server for testing (MediaMTX).
+# Started by live-test/start.sh, which fills in __STREAM_KEY__. Everything not listed uses MediaMTX defaults.
+logLevel: info
+
+authMethod: internal
+authInternalUsers:
+  # Only the phone (with the private key) may broadcast…
+  - user: phone
+    pass: __STREAM_KEY__
+    ips: []
+    permissions:
+      - action: publish
+        path: live
+  # …everyone may watch.
+  - user: any
+    pass:
+    ips: []
+    permissions:
+      - action: read
+        path: live
+  - user: any
+    pass:
+    ips: ["127.0.0.1", "::1"]
+    permissions:
+      - action: api
+
+api: true
+apiAddress: 127.0.0.1:9997
+
+rtmp: true             # phone → Mac (Larix Broadcaster, RTMP)
+rtmpAddress: :1935
+hls: true              # Mac → website viewers
+hlsAddress: :8888
+hlsAllowOrigin: '*'
+hlsVariant: fmp4       # standard HLS: plays everywhere (Safari natively, others via hls.js)
+hlsSegmentDuration: 1s
+hlsSegmentCount: 7
+rtsp: false
+webrtc: false
+srt: false
+
+paths:
+  live:                # the one stream: rtmp://<mac-ip>:1935/live

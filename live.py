@@ -7,19 +7,33 @@ youtube.com/channel/<id>/live points at the current (or next scheduled) broadcas
 Status is cached for CACHE_SECONDS and refreshed in a background thread, so
 page loads never wait on YouTube.
 """
+import os
 import re
 import threading
 import time
 import urllib.request
 
-CACHE_SECONDS = 45
+CACHE_SECONDS = int(os.environ.get("LIVE_CHECK_SECONDS", 20 if os.environ.get("OWN_LIVE_HLS") else 45))
 HTTP_TIMEOUT = 10
 HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
                          "(KHTML, like Gecko) Chrome/130 Safari/537.36",
            "Accept-Language": "ar,en;q=0.8", "Cookie": "SOCS=CAI"}
 
-_state = {"state": "unknown", "video_id": None, "title": None, "starts_at": None,
-          "checked_at": 0, "error": None, "refreshing": False}
+_state = {"state": "unknown", "source": "youtube", "video_id": None, "title": None, "starts_at": None,
+          "hls": None, "checked_at": 0, "error": None, "refreshing": False}
+
+
+def own_stream_live(hls_url: str) -> bool:
+    """Your own stream (phone → MediaMTX / Cloudflare …): live when its HLS playlist answers."""
+    try:
+        # MediaMTX first redirects with a cookie check, so keep cookies across the redirect
+        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor())
+        with opener.open(urllib.request.Request(hls_url, headers={"User-Agent": "academy-site"}), timeout=6) as r:
+            return r.status == 200 and b"#EXTM3U" in r.read(4096)
+    except Exception:
+        return False
+
+
 _lock = threading.Lock()
 
 
@@ -42,12 +56,18 @@ def parse(html: str) -> dict:
 
 def _refresh(channel_id: str) -> None:
     try:
+        own = os.environ.get("OWN_LIVE_HLS")
+        if own and own_stream_live(own):  # your own broadcast wins over YouTube
+            with _lock:
+                _state.update(state="live", source="own", hls=own, video_id=None, title=None,
+                              starts_at=None, checked_at=time.time(), error=None)
+            return
         req = urllib.request.Request(f"https://www.youtube.com/channel/{channel_id}/live", headers=HEADERS)
         with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as r:
             html = r.read().decode("utf-8", "replace")
         result = parse(html)
         with _lock:
-            _state.update(result, checked_at=time.time(), error=None)
+            _state.update(result, source="youtube", hls=None, checked_at=time.time(), error=None)
     except Exception as ex:
         with _lock:  # keep the last known state, retry on the next cycle
             _state.update(checked_at=time.time(), error=f"{type(ex).__name__}: {ex}")
@@ -65,4 +85,4 @@ def status(channel_id: str | None, wait: float = 0) -> dict:
         if wait and _state["checked_at"] == 0:
             t.join(wait)
     with _lock:
-        return {k: _state[k] for k in ("state", "video_id", "title", "starts_at", "checked_at", "error")}
+        return {k: _state[k] for k in ("state", "source", "video_id", "title", "starts_at", "hls", "checked_at", "error")}

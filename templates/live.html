@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% from "_macros.html" import video_card with context %}
 {% block title %}{{ t.live_title }} · {{ t.academy }}{% endblock %}
+{% block scripts %}<script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js" defer></script>{% endblock %}
 {% block content %}
 <section class="page-head pattern">
   <div class="wrap live-title">
@@ -10,14 +11,19 @@
 </section>
 
 <section class="wrap live-wrap" id="live-root" data-state="{{ s.state }}" data-video="{{ s.video_id or '' }}"
+         data-source="{{ s.source }}" data-hls="{{ s.hls or '' }}"
          data-channel="{{ cid }}" data-host="{{ host }}" data-starts="{{ s.starts_at or '' }}">
   <div class="live-main">
     {# LIVE: player + chat (also used as fallback when status is unknown) #}
     <div id="live-on"{% if s.state not in ('live', 'unknown') %} hidden{% endif %}>
-      <div class="live-grid">
+      <div class="live-grid{{ ' no-chat' if s.source == 'own' }}">
         <div>
         <div class="player" data-vt-media style="view-transition-name: media">
-          <iframe id="live-player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen
+          <div id="own-wrap" class="own-wrap"{% if s.source != 'own' %} hidden{% endif %}>
+            <video id="own-player" playsinline autoplay muted controls></video>
+            <button id="unmute" class="unmute" type="button">🔊 {{ t.tap_sound }}</button>
+          </div>
+          <iframe id="live-player"{% if s.source == 'own' %} hidden{% endif %} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen
             src="{% if s.state == 'live' %}https://www.youtube-nocookie.com/embed/{{ s.video_id }}?autoplay=1&rel=0{% elif s.state == 'unknown' %}https://www.youtube-nocookie.com/embed/live_stream?channel={{ cid }}{% endif %}"></iframe>
         </div>
         <h2 id="live-video-title" class="live-video-title">{{ s.title or '' }}</h2>

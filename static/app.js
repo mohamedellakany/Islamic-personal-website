@@ -279,6 +279,38 @@ const liveRoot = () => document.getElementById("live-root");
 
 function show(id, on) { const el = document.getElementById(id); if (el) el.hidden = !on; }
 
+// ---- own stream (phone → MediaMTX/Cloudflare → HLS) ----
+let hls = null;
+function startOwn(url) {
+  const v = document.getElementById("own-player");
+  if (!v || !url) return;
+  stopOwn();
+  if (v.canPlayType("application/vnd.apple.mpegurl")) {
+    v.src = url;                                   // Safari / iPhone play HLS natively
+  } else if (window.Hls && Hls.isSupported()) {
+    hls = new Hls({ liveSyncDurationCount: 3, lowLatencyMode: true });
+    hls.loadSource(url);
+    hls.attachMedia(v);
+    hls.on(Hls.Events.ERROR, (_, d) => { if (d.fatal) setTimeout(() => startOwn(url), 3000); });
+  } else {
+    setTimeout(() => startOwn(url), 500);          // hls.js still loading
+    return;
+  }
+  v.muted = true;                                  // browsers only autoplay muted video
+  v.play().catch(() => {});
+  document.getElementById("unmute").hidden = false;
+}
+function stopOwn() {
+  if (hls) { hls.destroy(); hls = null; }
+  const v = document.getElementById("own-player");
+  if (v) { v.removeAttribute("src"); v.load(); }
+}
+function useOwnLayout(own) {
+  show("own-wrap", own);
+  show("live-player", !own);
+  document.querySelector(".live-grid")?.classList.toggle("no-chat", own);
+}
+
 function applyLive(s) {
   // header badge + banner on every page
   document.querySelectorAll(".live-link").forEach((a) => a.classList.toggle("on", s.state === "live"));
@@ -287,15 +319,28 @@ function applyLive(s) {
 
   const root = liveRoot();
   if (!root || s.state === "unknown") return;
-  const prev = root.dataset.state, prevVid = root.dataset.video;
+  const prev = root.dataset.state, prevVid = root.dataset.video, prevSrc = root.dataset.source;
   root.dataset.state = s.state;
   root.dataset.video = s.video_id || "";
+  root.dataset.source = s.source || "youtube";
+  root.dataset.hls = s.hls || "";
   show("live-on", s.state === "live");
   show("live-soon", s.state === "upcoming");
   show("live-off", s.state === "offline");
   show("live-state-pill", s.state === "live");
 
-  if (s.state === "live" && (prev !== "live" || prevVid !== s.video_id)) {
+  const own = s.state === "live" && s.source === "own";
+  if (own) {
+    if (prev !== "live" || prevSrc !== "own") {
+      useOwnLayout(true);
+      document.getElementById("live-player").src = "about:blank";
+      document.getElementById("live-video-title").textContent = "";
+      startOwn(s.hls);
+    }
+    return;
+  }
+  if (prevSrc === "own") { stopOwn(); useOwnLayout(false); }
+  if (s.state === "live" && (prev !== "live" || prevVid !== s.video_id || prevSrc === "own")) {
     // only (re)load the player when the broadcast actually changes — never on every poll
     document.getElementById("live-player").src = `https://www.youtube-nocookie.com/embed/${s.video_id}?autoplay=1&rel=0`;
     document.getElementById("live-chat").src = `https://www.youtube.com/live_chat?v=${s.video_id}&embed_domain=${root.dataset.host}`;
@@ -333,7 +378,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // live page checks every 20s, other pages every 60s (only while the tab is visible)
   setInterval(pollLive, liveRoot() ? 20000 : 60000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) pollLive(); });
-  if (liveRoot()) { pollLive(); setInterval(tickCountdown, 1000); tickCountdown(); }
+  if (liveRoot()) {
+    const r = liveRoot();
+    if (r.dataset.state === "live" && r.dataset.source === "own") startOwn(r.dataset.hls);
+    pollLive(); setInterval(tickCountdown, 1000); tickCountdown();
+  }
+  document.getElementById("unmute")?.addEventListener("click", (e) => {
+    const v = document.getElementById("own-player");
+    v.muted = false; v.play().catch(() => {});
+    e.currentTarget.hidden = true;
+  });
 
   document.getElementById("copy-link")?.addEventListener("click", async (e) => {
     const btn = e.currentTarget;

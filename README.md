@@ -57,6 +57,16 @@ A red "Live" badge and a site-wide banner appear on every page while on air.
 QR code: `/live/qr.png` (add `?download=1&size=24` for a large file), printable A4 poster: `/live/poster`.
 Set `SITE_URL` if you move to a custom domain; `LIVE_CHANNEL_ID` can point at another channel for testing.
 
+## Your own live stream, free test (`live-test/`)
+Phone camera → this Mac → website, no YouTube or paid service. Needs `brew install mediamtx`
+(cloudflared for the public link) and the free **Larix Broadcaster** app on the phone (same Wi-Fi).
+```bash
+bash live-test/start.sh            # local test; prints the Larix URL + how to run the site
+bash live-test/start.sh --public   # free public https link, Azure site shows the stream; Ctrl+C removes it
+```
+The site plays any HLS stream set in `OWN_LIVE_HLS` and prefers it over YouTube while it's live,
+so a paid service (e.g. Cloudflare Stream) later is just a different `OWN_LIVE_HLS` value.
+
 ## Deploy
 - **Azure App Service (free F1)** — live at https://drmoustafakamel-academy.azurewebsites.net
   ```bash

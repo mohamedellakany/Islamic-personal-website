@@ -64,7 +64,7 @@ T = {
         "share": "شارك رابط البث", "copy_link": "نسخ الرابط", "copied": "تم النسخ ✓", "whatsapp": "واتساب",
         "download_qr": "تحميل رمز QR", "poster": "طباعة ملصق", "chat": "الدردشة المباشرة", "print": "طباعة",
         "poster_h": "تابعوا البث المباشر", "poster_p": "امسح الرمز بكاميرا الهاتف",
-        "d": "يوم", "h": "ساعة", "m": "دقيقة", "s": "ثانية", "on_air": "على الهواء",
+        "d": "يوم", "h": "ساعة", "m": "دقيقة", "s": "ثانية", "on_air": "على الهواء", "tap_sound": "اضغط لتشغيل الصوت",
     },
     "en": {
         "academy": "Dr. Moustafa Kamel Academy", "home": "Home", "courses": "Courses", "latest": "Latest lessons",
@@ -92,7 +92,7 @@ T = {
         "share": "Share the live link", "copy_link": "Copy link", "copied": "Copied ✓", "whatsapp": "WhatsApp",
         "download_qr": "Download QR code", "poster": "Print a poster", "chat": "Live chat", "print": "Print",
         "poster_h": "Join the live lecture", "poster_p": "Scan with your phone camera",
-        "d": "days", "h": "hours", "m": "min", "s": "sec", "on_air": "On air",
+        "d": "days", "h": "hours", "m": "min", "s": "sec", "on_air": "On air", "tap_sound": "Tap for sound",
     },
 }
 
@@ -387,4 +387,4 @@ def not_found(_):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, host=os.environ.get("HOST", "127.0.0.1"), port=int(os.environ.get("PORT", 5000)))
