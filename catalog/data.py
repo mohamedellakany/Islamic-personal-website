@@ -74,7 +74,7 @@ def search_index():
             if v["id"] not in seen:
                 seen.add(v["id"])
                 idx.append((norm(v["title"] + " " + p["title"]), v, p))
-    for v in d["latest"]:
+    for v in d["latest"] + d["shorts"]:
         if v["id"] not in seen:
             seen.add(v["id"])
             idx.append((norm(v["title"]), v, None))

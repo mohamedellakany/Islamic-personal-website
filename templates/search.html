@@ -1,17 +1,26 @@
 {% extends "base.html" %}
-{% from "_macros.html" import video_card with context %}
+{% from "_macros.html" import course_card, video_card with context %}
 {% block title %}{{ t.search }}: {{ q }}{% endblock %}
 {% block content %}
 <section class="page-head pattern">
   <div class="wrap">
-    <form class="search" action="{{ url('search') }}"><input name="q" value="{{ q }}" placeholder="{{ t.search_ph }}" autofocus><button>{{ t.search }}</button></form>
-    {% if q %}<p class="light">{{ t.results_for }} «{{ q }}» — {{ results|length }}</p>{% endif %}
+    <form class="search" action="{{ url('search') }}"><input type="search" name="q" value="{{ q }}" placeholder="{{ t.search_ph }}" autofocus><button>{{ t.search }}</button></form>
+    {% if q %}<p class="light">{{ t.results_for }} «{{ q }}» — {{ results|length + found_courses|length }}</p>{% endif %}
   </div>
 </section>
+{% if found_courses %}
 <section>
   <div class="wrap">
+    <div class="head"><h2>{{ t.courses_found }}</h2></div>
+    <div class="grid g3">{% for p in found_courses %}{{ course_card(p) }}{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+<section{% if found_courses %} class="no-top"{% endif %}>
+  <div class="wrap">
+    {% if found_courses and results %}<div class="head"><h2>{{ t.lessons_found }}</h2></div>{% endif %}
     <div class="grid g4">{% for v, p in results %}{{ video_card(v, p) }}{% endfor %}</div>
-    {% if q and not results %}<p class="muted center">{{ t.no_results }}</p>{% endif %}
+    {% if q and not results and not found_courses %}<p class="muted center">{{ t.no_results }}</p>{% endif %}
   </div>
 </section>
 {% endblock %}

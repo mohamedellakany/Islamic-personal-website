@@ -38,6 +38,13 @@ h1,h2,h3{font-family:Amiri,'IBM Plex Sans Arabic',serif;line-height:1.35}
 .cta{background:var(--green);color:#fff!important;padding:9px 18px;border-radius:10px;font-weight:600;font-size:14px}
 .cta:hover{background:var(--green-2)}
 .menu-btn{display:none;background:none;border:0;font-size:24px;color:var(--green)}
+.nav-search{display:flex;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.nav-search:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
+.nav-search input{border:0;outline:0;background:none;font:inherit;font-size:14px;color:var(--ink);padding:8px 12px;width:170px;min-width:0;transition:width .3s var(--ease)}
+.nav-search input:focus{width:220px}
+.nav-search button{background:none;border:0;color:var(--green);padding:0 10px;display:grid;place-items:center;align-self:stretch}
+.nav-search button:hover{color:var(--gold)}
+@media(max-width:1150px){.nav{gap:16px}.nav-search input,.nav-search input:focus{width:130px}}
 
 /* buttons */
 .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;font-weight:600;border:0;transition:.2s}
@@ -210,6 +217,7 @@ section.no-top{padding-top:0}
   .menu-btn{display:block}
   .nav{display:none;position:absolute;top:70px;inset-inline:0;background:var(--paper);flex-direction:column;padding:18px;border-bottom:1px solid var(--line)}
   .nav-open .nav{display:flex}
+  .nav-search{width:100%}.nav-search input,.nav-search input:focus{width:100%;flex:1;padding:12px 14px;font-size:16px}
   .about{flex-direction:column;align-items:center;text-align:center}
 }
 @media(max-width:560px){.g3,.g4{grid-template-columns:1fr}.lesson-list img{display:none}.stats b{font-size:24px}.page-head h1{font-size:32px}.head h2{font-size:26px}.pn{grid-template-columns:1fr}}

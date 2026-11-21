@@ -28,6 +28,10 @@
     </a>
     <button class="menu-btn" aria-label="menu" onclick="document.body.classList.toggle('nav-open')">☰</button>
     <nav class="nav">
+      <form class="nav-search" action="{{ url('search') }}" role="search">
+        <input type="search" name="q" value="{{ q or '' }}" placeholder="{{ t.search_short }}" aria-label="{{ t.search }}" enterkeyhint="search">
+        <button aria-label="{{ t.search }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+      </form>
       <a class="live-link{{ ' on' if live.state == 'live' }}" href="{{ url('live_page') }}"><i class="live-dot"></i>{{ t.live }}</a>
       <a href="{{ url('courses') }}">{{ t.courses }}</a>
       <a href="{{ url('latest') }}">{{ t.latest }}</a>

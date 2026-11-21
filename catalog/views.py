@@ -110,12 +110,14 @@ def shorts(request):
 
 
 def search(request):
-    q = request.GET.get("q", "").strip()
-    results = []
+    q = request.GET.get("q", "").strip()[:200]
+    results, found_courses = [], []
     if q:
         terms = norm(q).split()
+        found_courses = [p for p in sorted(data()["playlists"], key=lambda p: -p["count"])
+                         if all(t in norm(p["title"]) for t in terms)][:12]
         results = [(v, p) for text, v, p in search_index() if all(t in text for t in terms)][:120]
-    return render(request, "search.html", q=q, results=results)
+    return render(request, "search.html", q=q, results=results, found_courses=found_courses)
 
 
 def about(request):
