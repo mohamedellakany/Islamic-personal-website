@@ -5,3 +5,6 @@ deploy/.azure-app
 live-test/.stream-key
 live-test/.mediamtx.run.yml
 live-test/*.log
+live-test/auto.key
+live-test/auto.crt
+*.key

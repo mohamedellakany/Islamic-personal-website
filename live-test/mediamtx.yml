@@ -31,13 +31,14 @@ rtmp: true             # phone → Mac (Larix Broadcaster, RTMP)
 rtmpAddress: :1935
 hls: true              # Mac → website viewers
 hlsAddress: :8888
-hlsAllowOrigin: '*'
+hlsAllowOrigins: ['*']
 hlsVariant: fmp4       # standard HLS: plays everywhere (Safari natively, others via hls.js)
 hlsSegmentDuration: 1s
 hlsSegmentCount: 7
 rtsp: false
 webrtc: false
 srt: false
+moq: false            # unused protocol; leaving it on makes MediaMTX create auto.key/auto.crt here
 
 paths:
   live:                # the one stream: rtmp://<mac-ip>:1935/live
