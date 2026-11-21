@@ -1,13 +1,61 @@
 {% extends "base.html" %}
 {% block title %}{{ t.about }} · {{ t.academy }}{% endblock %}
 {% block content %}
+{% if lang == 'ar' %}
+{% set bio = {
+  "name": "الدكتور مصطفى سليمان كامل",
+  "role": "إمام المركز الإسلامي · مسجد الأنصار، كاليفورنيا",
+  "intro": "تخرّج عام ١٩٩٢ في كلية الشريعة والقانون، قسم القانون، بجامعة الأزهر الشريف. وقد شرّفه الله تعالى بحفظ القرآن الكريم صغيرًا وهو في الحادية عشرة من عمره، وكان يخطب ويدرّس في المساجد قبل تخرّجه.",
+  "edu_h": "الإجازات والمؤهلات العلمية",
+  "edu": [
+    "إجازة في القرآن الكريم حفظًا وتجويدًا برواية حفص عن عاصم",
+    "إجازة في القرآن الكريم حفظًا وتجويدًا برواية قالون عن نافع",
+    "إجازة في علم الحديث رواية ودراية",
+    "ماجستير في الفقه المقارن: «الزواج برؤية مقاصدية» (٢٠١٣)",
+    "دكتوراه في الفقه المقارن بعنوان «الفرقة بين الزوجين في الشريعة الإسلامية وقانون الأسرة الأمريكي في كاليفورنيا» (٢٠١٥)",
+  ],
+  "work_h": "المسيرة العملية",
+  "work": [
+    "محاميًا من ١٩٩٢ إلى ١٩٩٤",
+    "إمامًا وخطيبًا بوزارة الأوقاف المصرية من ١٩٩٤ إلى ١٩٩٩",
+    "تدريس اللغة العربية والعلوم الشرعية",
+    "قدم إلى أمريكا عام ٢٠٠٣ وعمل بمسجد الأنصار بكاليفورنيا (West Coast Islamic Society)، وهو إلى يومنا هذا إمام المركز الإسلامي",
+  ],
+} %}
+{% else %}
+{% set bio = {
+  "name": "Dr. Moustafa Soliman Kamel",
+  "role": "Imam of the Islamic Center · Al-Ansar Mosque, California",
+  "intro": "Dr. Moustafa Kamel graduated in 1992 from the Faculty of Sharia and Law (Law Department) at Al-Azhar University. By the grace of Allah, he memorized the entire Holy Quran as a child, at the age of eleven, and was already delivering sermons and teaching in mosques before he graduated.",
+  "edu_h": "Ijazahs & Academic Qualifications",
+  "edu": [
+    "Ijazah in Quran memorization and Tajweed — narration of Hafs from Asim",
+    "Ijazah in Quran memorization and Tajweed — narration of Qalun from Nafi",
+    "Ijazah in the science of Hadith (riwayah and dirayah)",
+    "Master's in Comparative Fiqh: “Marriage from a Maqasid Perspective” (2013)",
+    "PhD in Comparative Fiqh: “Separation Between Spouses in Islamic Sharia and California Family Law” (2015)",
+  ],
+  "work_h": "Career",
+  "work": [
+    "Lawyer, 1992 – 1994",
+    "Imam and Khateeb with the Egyptian Ministry of Awqaf, 1994 – 1999",
+    "Teacher of Arabic language and Islamic sciences",
+    "Came to the United States in 2003 to serve at Al-Ansar Mosque in California (West Coast Islamic Society), where he remains the Imam of the Islamic Center to this day",
+  ],
+} %}
+{% endif %}
 <section class="page-head pattern"><div class="wrap"><h1>{{ t.about_h }}</h1></div></section>
 <section>
   <div class="wrap about">
-    {% if ch.avatar %}<img class="about-img" src="{{ ch.avatar }}" alt="">{% endif %}
+    <img class="about-img" src="{{ url_for('static', filename='img/dr-moustafa.jpg') }}" alt="{{ bio.name }}" width="200" height="200">
     <div class="about-text">
-      {% set parts = (ch.description or '').split('---') %}
-      <p>{{ (parts[0] if lang == 'ar' or parts|length == 1 else parts[1]).strip() }}</p>
+      <h2 class="bio-name">{{ bio.name }}</h2>
+      <p class="bio-role">{{ bio.role }}</p>
+      <p>{{ bio.intro }}</p>
+      <h3 class="bio-h">{{ bio.edu_h }}</h3>
+      <ul class="bio-list">{% for x in bio.edu %}<li>{{ x }}</li>{% endfor %}</ul>
+      <h3 class="bio-h">{{ bio.work_h }}</h3>
+      <ul class="bio-list">{% for x in bio.work %}<li>{{ x }}</li>{% endfor %}</ul>
       <div class="actions"><a class="btn gold" href="{{ ch.url }}?sub_confirmation=1" target="_blank" rel="noopener">{{ t.yt_sub }}</a></div>
     </div>
   </div>
