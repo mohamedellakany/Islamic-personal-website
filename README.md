@@ -50,6 +50,13 @@ new lessons appear in Latest + their course with a "New" badge, Shorts go to Sho
 `sync.py` occasionally (e.g. monthly) to pick up durations, new playlists and anything older than the feed.
 Check status at `/healthz`.
 
+## Live broadcast (`live.py`)
+`/live` shows the YouTube live stream + live chat automatically when the channel is on air, a countdown when a
+stream is scheduled, and an offline message otherwise (checked every ~45s; pages update without refresh).
+A red "Live" badge and a site-wide banner appear on every page while on air.
+QR code: `/live/qr.png` (add `?download=1&size=24` for a large file), printable A4 poster: `/live/poster`.
+Set `SITE_URL` if you move to a custom domain; `LIVE_CHANNEL_ID` can point at another channel for testing.
+
 ## Deploy
 - **Azure App Service (free F1)** — live at https://drmoustafakamel-academy.azurewebsites.net
   ```bash

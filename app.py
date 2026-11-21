@@ -4,19 +4,27 @@ Run:  .venv/bin/python app.py   →  http://127.0.0.1:5000
 Data comes from data/channel.json (create/refresh it with sync.py).
 """
 import copy
+import io
 import json
+import os
 import re
 from functools import lru_cache
 from pathlib import Path
 
 import feed
+import live
+import qrcode
 from sync import categorize, lesson_number
-from flask import Flask, abort, jsonify, make_response, redirect, render_template, request, url_for
+from flask import Flask, abort, jsonify, make_response, redirect, render_template, request, send_file, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 BASE = Path(__file__).parent
 DATA_FILE = BASE / "data" / "channel.json"
 
 app = Flask(__name__)
+# Azure/nginx terminate HTTPS in front of us: trust their X-Forwarded-* headers so
+# generated links (QR code, share links) use the real public https:// address.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
 # ---------------------------------------------------------------- i18n
 CATEGORIES = {
@@ -49,6 +57,14 @@ T = {
         "about_h": "عن الدكتور مصطفى كامل", "contact": "تواصل", "ayah": "وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا", "ayah_ref": "سورة المزمل · ٤",
         "footer": "جميع الحقوق محفوظة", "nodata": "لم تتم مزامنة بيانات القناة بعد. شغّل: python sync.py",
         "reset": "إعادة ضبط التقدم", "new": "جديد",
+        "live": "مباشر", "live_title": "البث المباشر", "live_banner": "الدكتور مصطفى كامل على الهواء الآن",
+        "watch_live": "شاهد البث ←", "upcoming": "بث قادم", "starts_in": "يبدأ البث خلال", "remind": "ذكّرني على يوتيوب",
+        "offline_h": "لا يوجد بث مباشر الآن", "offline_p": "عند بدء البث سيظهر هنا تلقائياً، دون الحاجة لتحديث الصفحة.",
+        "notify_tip": "فعّل الجرس على يوتيوب ليصلك تنبيه عند بدء البث", "scan": "امسح الرمز لمتابعة البث المباشر",
+        "share": "شارك رابط البث", "copy_link": "نسخ الرابط", "copied": "تم النسخ ✓", "whatsapp": "واتساب",
+        "download_qr": "تحميل رمز QR", "poster": "طباعة ملصق", "chat": "الدردشة المباشرة", "print": "طباعة",
+        "poster_h": "تابعوا البث المباشر", "poster_p": "امسح الرمز بكاميرا الهاتف",
+        "d": "يوم", "h": "ساعة", "m": "دقيقة", "s": "ثانية", "on_air": "على الهواء",
     },
     "en": {
         "academy": "Dr. Moustafa Kamel Academy", "home": "Home", "courses": "Courses", "latest": "Latest lessons",
@@ -69,6 +85,14 @@ T = {
         "about_h": "About Dr. Moustafa Kamel", "contact": "Contact", "ayah": "وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا", "ayah_ref": "Al-Muzzammil · 4",
         "footer": "All rights reserved", "nodata": "Channel data not synced yet. Run: python sync.py",
         "reset": "Reset progress", "new": "New",
+        "live": "Live", "live_title": "Live broadcast", "live_banner": "Dr. Moustafa Kamel is live now",
+        "watch_live": "Watch now →", "upcoming": "Upcoming broadcast", "starts_in": "Starts in", "remind": "Remind me on YouTube",
+        "offline_h": "No live broadcast right now", "offline_p": "When a broadcast starts it will appear here automatically, no need to refresh.",
+        "notify_tip": "Turn on the bell on YouTube to get notified when a broadcast starts", "scan": "Scan to join the live lecture",
+        "share": "Share the live link", "copy_link": "Copy link", "copied": "Copied ✓", "whatsapp": "WhatsApp",
+        "download_qr": "Download QR code", "poster": "Print a poster", "chat": "Live chat", "print": "Print",
+        "poster_h": "Join the live lecture", "poster_p": "Scan with your phone camera",
+        "d": "days", "h": "hours", "m": "min", "s": "sec", "on_air": "On air",
     },
 }
 
@@ -193,6 +217,7 @@ def inject():
     d = data()
     total = len({v["id"] for p in d["playlists"] for v in p["videos"]} | {v["id"] for v in d.get("latest", [])})
     return {"t": T[lang], "lang": lang, "dir": "rtl" if lang == "ar" else "ltr", "CATS": CATEGORIES,
+            "live": live_status(), "live_url": live_url(),
             "ch": d.get("channel", {}), "total_videos": total, "has_data": bool(d["playlists"])}
 
 
@@ -292,11 +317,61 @@ def about():
     return render_template("about.html")
 
 
+# ---------------------------------------------------------------- live broadcast
+def channel_id():
+    # LIVE_CHANNEL_ID lets you test with another channel that is currently live
+    return os.environ.get("LIVE_CHANNEL_ID") or data().get("channel", {}).get("id")
+
+
+def live_status(wait: float = 0) -> dict:
+    return live.status(channel_id(), wait=wait)
+
+
+def live_url() -> str:
+    """Public address of the live page (SITE_URL overrides, e.g. for a custom domain)."""
+    base = os.environ.get("SITE_URL") or request.url_root
+    return base.rstrip("/") + "/live"
+
+
+@app.route("/live")
+def live_page():
+    s = live_status(wait=4)
+    latest = [v for v in data().get("latest", []) if v.get("duration") is None or v["duration"] > 60][:4]
+    return render_template("live.html", s=s, latest=latest, cid=channel_id(),
+                           host=request.host.split(":")[0])
+
+
+@app.route("/api/live")
+def api_live():
+    resp = jsonify(live_status())
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
+@app.route("/live/qr.png")
+def live_qr():
+    qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_H,
+                       box_size=max(4, min(int(request.args.get("size", 12)), 40)), border=2)
+    qr.add_data(live_url())
+    qr.make(fit=True)
+    buf = io.BytesIO()
+    qr.make_image(fill_color="#0f4c3a", back_color="white").save(buf, format="PNG")
+    buf.seek(0)
+    return send_file(buf, mimetype="image/png", max_age=86400,
+                     as_attachment="download" in request.args, download_name="live-lecture-qr.png")
+
+
+@app.route("/live/poster")
+def live_poster():
+    return render_template("poster.html")
+
+
 @app.route("/healthz")
 def healthz():
     """Quick check that the site + live feed are working."""
     d = data()
-    return jsonify(ok=True, playlists=len(d["playlists"]), latest=len(d.get("latest", [])), feed=feed.status())
+    return jsonify(ok=True, playlists=len(d["playlists"]), latest=len(d.get("latest", [])), feed=feed.status(),
+                   live=live_status())
 
 
 @app.route("/lang/<code>")

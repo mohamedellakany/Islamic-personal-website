@@ -271,3 +271,75 @@ document.addEventListener("DOMContentLoaded", () => {
   markNav();
   if (!reduceMotion) { initReveal(); countUp(); }
 });
+
+/* =====================================================================
+   LIVE BROADCAST — header badge, site banner, live page auto-switching
+   ===================================================================== */
+const liveRoot = () => document.getElementById("live-root");
+
+function show(id, on) { const el = document.getElementById(id); if (el) el.hidden = !on; }
+
+function applyLive(s) {
+  // header badge + banner on every page
+  document.querySelectorAll(".live-link").forEach((a) => a.classList.toggle("on", s.state === "live"));
+  const banner = document.getElementById("live-banner");
+  if (banner) banner.hidden = s.state !== "live";
+
+  const root = liveRoot();
+  if (!root || s.state === "unknown") return;
+  const prev = root.dataset.state, prevVid = root.dataset.video;
+  root.dataset.state = s.state;
+  root.dataset.video = s.video_id || "";
+  show("live-on", s.state === "live");
+  show("live-soon", s.state === "upcoming");
+  show("live-off", s.state === "offline");
+  show("live-state-pill", s.state === "live");
+
+  if (s.state === "live" && (prev !== "live" || prevVid !== s.video_id)) {
+    // only (re)load the player when the broadcast actually changes — never on every poll
+    document.getElementById("live-player").src = `https://www.youtube-nocookie.com/embed/${s.video_id}?autoplay=1&rel=0`;
+    document.getElementById("live-chat").src = `https://www.youtube.com/live_chat?v=${s.video_id}&embed_domain=${root.dataset.host}`;
+    document.getElementById("live-video-title").textContent = s.title || "";
+  }
+  if (s.state !== "live" && prev === "live") {
+    document.getElementById("live-player").src = "about:blank";  // stop playback when the stream ends
+    document.getElementById("live-chat").src = "about:blank";
+  }
+  if (s.state === "upcoming") {
+    root.dataset.starts = s.starts_at || "";
+    document.getElementById("soon-title").textContent = s.title || "";
+    document.getElementById("remind-link").href = `https://www.youtube.com/watch?v=${s.video_id}`;
+  }
+}
+
+async function pollLive() {
+  if (document.hidden) return;
+  try {
+    const r = await fetch("/api/live", { cache: "no-store" });
+    if (r.ok) applyLive(await r.json());
+  } catch { /* offline or server asleep: try again next tick */ }
+}
+
+function tickCountdown() {
+  const root = liveRoot(), box = document.getElementById("countdown");
+  if (!root || !box || root.dataset.state !== "upcoming" || !root.dataset.starts) return;
+  let left = Math.max(0, +root.dataset.starts - Date.now() / 1000);
+  const parts = { d: Math.floor(left / 86400), h: Math.floor(left % 86400 / 3600), m: Math.floor(left % 3600 / 60), s: Math.floor(left % 60) };
+  for (const [u, n] of Object.entries(parts)) box.querySelector(`[data-u=${u}]`).textContent = String(n).padStart(2, "0");
+  if (left === 0) pollLive();  // start time reached: check right away
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // live page checks every 20s, other pages every 60s (only while the tab is visible)
+  setInterval(pollLive, liveRoot() ? 20000 : 60000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) pollLive(); });
+  if (liveRoot()) { pollLive(); setInterval(tickCountdown, 1000); tickCountdown(); }
+
+  document.getElementById("copy-link")?.addEventListener("click", async (e) => {
+    const btn = e.currentTarget;
+    try { await navigator.clipboard.writeText(btn.dataset.url); }
+    catch { prompt("", btn.dataset.url); }
+    btn.textContent = L.copied;
+    setTimeout(() => (btn.textContent = L.copy), 2000);
+  });
+});

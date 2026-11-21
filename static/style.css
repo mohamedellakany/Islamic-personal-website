@@ -289,3 +289,58 @@ html.js .rv.in{opacity:1;transform:none;transition:opacity .6s var(--ease),trans
 /* "New" badge for lessons picked up from the live YouTube feed */
 .new-badge{position:absolute;top:8px;inset-inline-end:8px;background:var(--gold);color:#1a1408;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;box-shadow:0 4px 10px -4px rgba(0,0,0,.5)}
 .new-badge.inline{position:static;display:inline-block;margin-inline-start:6px;vertical-align:middle}
+
+/* =====================================================================
+   LIVE BROADCAST
+   ===================================================================== */
+:root{--red:#d93025}
+.live-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#b9ad92;margin-inline-end:6px;vertical-align:middle}
+.live-link.on{color:var(--red)!important;font-weight:700}
+.live-link.on .live-dot,.live-pill .live-dot,.off-icon .live-dot{background:var(--red);box-shadow:0 0 0 0 rgba(217,48,37,.6);animation:live-pulse 1.6s infinite}
+.off-icon .live-dot{background:#b9ad92;animation:none}
+@keyframes live-pulse{70%{box-shadow:0 0 0 9px rgba(217,48,37,0)}100%{box-shadow:0 0 0 0 rgba(217,48,37,0)}}
+.live-pill{display:inline-flex;align-items:center;background:var(--red);color:#fff;font-weight:700;font-size:13px;padding:4px 12px;border-radius:30px}
+.live-pill .live-dot{background:#fff}
+.live-pill.big{font-size:15px;padding:6px 16px}
+
+/* site-wide banner while on air */
+.live-banner{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;background:linear-gradient(90deg,#8e1b13,var(--red),#8e1b13);color:#fff;padding:11px 20px;font-size:15px;animation:banner-in .5s var(--ease)}
+.live-banner .live-pill{background:#fff;color:var(--red)}
+.live-banner .live-pill .live-dot{background:var(--red)}
+.live-banner .watch{background:rgba(255,255,255,.18);padding:4px 14px;border-radius:20px;font-weight:600}
+.live-banner:hover .watch{background:#fff;color:var(--red)}
+@keyframes banner-in{from{transform:translateY(-100%);opacity:0}}
+
+/* live page */
+.live-title{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.live-wrap{display:grid;grid-template-columns:1fr 300px;gap:28px;padding-top:32px;padding-bottom:64px;align-items:start}
+.live-grid{display:grid;grid-template-columns:1fr 340px;gap:18px}
+.live-grid .player{aspect-ratio:16/9}
+.chat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.chat h3{font-size:18px;color:var(--green);padding:10px 14px;border-bottom:1px solid var(--line)}
+.chat iframe{flex:1;border:0;min-height:300px;width:100%}
+.live-grid .player{width:100%}
+.live-video-title{font-size:28px;color:var(--green);margin-top:16px}
+.live-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:40px;text-align:center}
+.live-card h2{font-size:32px;color:var(--green);margin:12px 0 6px}
+.live-card .btn{margin-top:18px}
+.live-card .grid{text-align:start}
+.off-icon{width:72px;height:72px;margin:0 auto;border-radius:50%;background:var(--paper-2);display:grid;place-items:center}
+.off-icon .live-dot{width:18px;height:18px;margin:0}
+.countdown{display:flex;justify-content:center;gap:14px;margin:18px 0 6px;direction:ltr}
+.countdown div{background:var(--green);color:#fff;border-radius:14px;padding:14px 10px;min-width:80px;border:1px solid var(--gold)}
+.countdown b{display:block;font-family:Amiri,serif;font-size:38px;line-height:1;color:var(--gold-2)}
+.countdown span{font-size:12px;color:#e6d3a3}
+
+/* share + QR card */
+.share-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;text-align:center;position:sticky;top:90px}
+.share-card .qr{width:220px;height:220px;margin:0 auto;border-radius:12px;border:2px solid var(--gold);padding:6px;background:#fff}
+.share-card .scan{font-family:Amiri,serif;font-size:20px;color:var(--green);margin:12px 0 4px}
+.share-url{font-size:12px;color:var(--muted);word-break:break-all;background:var(--paper);border-radius:8px;padding:6px 8px;margin-bottom:12px}
+.share-actions{display:grid;gap:8px}
+.share-actions .btn{justify-content:center;padding:10px 14px;font-size:14px}
+.btn.wa{background:#25d366;color:#fff}
+.btn.wa:hover{background:#1ebe5a}
+@media(max-width:1100px){.live-grid{grid-template-columns:1fr}.chat iframe{min-height:420px}}
+@media(max-width:900px){.live-wrap{grid-template-columns:1fr}.share-card{position:static}}
+@media(max-width:560px){.chat iframe{min-height:320px}.live-video-title{font-size:22px}.countdown div{min-width:64px}.countdown b{font-size:28px}.live-card{padding:26px 16px}}

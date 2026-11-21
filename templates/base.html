@@ -28,6 +28,7 @@
     </a>
     <button class="menu-btn" aria-label="menu" onclick="document.body.classList.toggle('nav-open')">☰</button>
     <nav class="nav">
+      <a class="live-link{{ ' on' if live.state == 'live' }}" href="{{ url_for('live_page') }}"><i class="live-dot"></i>{{ t.live }}</a>
       <a href="{{ url_for('courses') }}">{{ t.courses }}</a>
       <a href="{{ url_for('latest') }}">{{ t.latest }}</a>
       <a href="{{ url_for('shorts') }}">{{ t.shorts }}</a>
@@ -38,6 +39,12 @@
   </div>
 </header>
 
+{% if request.endpoint != 'live_page' %}
+<a id="live-banner" class="live-banner" href="{{ url_for('live_page') }}"{% if live.state != 'live' %} hidden{% endif %}>
+  <span class="live-pill"><i class="live-dot"></i>{{ t.on_air }}</span>
+  <b>{{ t.live_banner }}</b><span class="watch">{{ t.watch_live }}</span>
+</a>
+{% endif %}
 <main>
 {% if not_found %}
   <section class="wrap empty"><h1>404</h1><p><a href="{{ url_for('index') }}">{{ t.home }}</a></p></section>
@@ -60,7 +67,7 @@
   </div>
   <div class="wrap copy">© {{ ch.name_ar if lang == 'ar' else ch.name }} · {{ t.footer }}</div>
 </footer>
-<script>window.I18N = {completed: "{{ t.completed }}", of: "{{ t.of }}", not_started: "{{ t.not_started }}", mark: "{{ t.mark }}", marked: "{{ t.marked }}", continue: "{{ t.continue }}", lesson: "{{ t.lesson }}"};</script>
+<script>window.I18N = {copied: "{{ t.copied }}", copy: "{{ t.copy_link }}", completed: "{{ t.completed }}", of: "{{ t.of }}", not_started: "{{ t.not_started }}", mark: "{{ t.mark }}", marked: "{{ t.marked }}", continue: "{{ t.continue }}", lesson: "{{ t.lesson }}"};</script>
 <script src="{{ url_for('static', filename='app.js') }}"></script>
 {% block scripts %}{% endblock %}
 </body>

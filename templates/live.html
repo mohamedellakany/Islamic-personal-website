@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% from "_macros.html" import video_card with context %}
+{% block title %}{{ t.live_title }} · {{ t.academy }}{% endblock %}
+{% block content %}
+<section class="page-head pattern">
+  <div class="wrap live-title">
+    <h1>{{ t.live_title }}</h1>
+    <span id="live-state-pill" class="live-pill big"{% if s.state != 'live' %} hidden{% endif %}><i class="live-dot"></i>{{ t.on_air }}</span>
+  </div>
+</section>
+
+<section class="wrap live-wrap" id="live-root" data-state="{{ s.state }}" data-video="{{ s.video_id or '' }}"
+         data-channel="{{ cid }}" data-host="{{ host }}" data-starts="{{ s.starts_at or '' }}">
+  <div class="live-main">
+    {# LIVE: player + chat (also used as fallback when status is unknown) #}
+    <div id="live-on"{% if s.state not in ('live', 'unknown') %} hidden{% endif %}>
+      <div class="live-grid">
+        <div>
+        <div class="player" data-vt-media style="view-transition-name: media">
+          <iframe id="live-player" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen
+            src="{% if s.state == 'live' %}https://www.youtube-nocookie.com/embed/{{ s.video_id }}?autoplay=1&rel=0{% elif s.state == 'unknown' %}https://www.youtube-nocookie.com/embed/live_stream?channel={{ cid }}{% endif %}"></iframe>
+        </div>
+        <h2 id="live-video-title" class="live-video-title">{{ s.title or '' }}</h2>
+        </div>
+        <div class="chat">
+          <h3>{{ t.chat }}</h3>
+          <iframe id="live-chat" src="{% if s.state == 'live' %}https://www.youtube.com/live_chat?v={{ s.video_id }}&embed_domain={{ host }}{% endif %}"></iframe>
+        </div>
+      </div>
+    </div>
+
+    {# UPCOMING: countdown #}
+    <div id="live-soon" class="live-card"{% if s.state != 'upcoming' %} hidden{% endif %}>
+      <span class="chip">{{ t.upcoming }}</span>
+      <h2 id="soon-title">{{ s.title or '' }}</h2>
+      <p class="muted">{{ t.starts_in }}</p>
+      <div class="countdown" id="countdown">
+        <div><b data-u="d">0</b><span>{{ t.d }}</span></div><div><b data-u="h">0</b><span>{{ t.h }}</span></div>
+        <div><b data-u="m">0</b><span>{{ t.m }}</span></div><div><b data-u="s">0</b><span>{{ t.s }}</span></div>
+      </div>
+      <a id="remind-link" class="btn gold" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v={{ s.video_id or '' }}">🔔 {{ t.remind }}</a>
+    </div>
+
+    {# OFFLINE #}
+    <div id="live-off" class="live-card"{% if s.state != 'offline' %} hidden{% endif %}>
+      <div class="off-icon"><i class="live-dot"></i></div>
+      <h2>{{ t.offline_h }}</h2>
+      <p class="muted">{{ t.offline_p }}</p>
+      <a class="btn gold" href="{{ ch.url }}?sub_confirmation=1" target="_blank" rel="noopener">🔔 {{ t.notify_tip }}</a>
+      {% if latest %}
+      <div class="head" style="margin-top:36px"><h2>{{ t.latest }}</h2></div>
+      <div class="grid g4">{% for v in latest %}{{ video_card(v) }}{% endfor %}</div>
+      {% endif %}
+    </div>
+  </div>
+
+  {# SHARE + QR #}
+  <aside class="share-card">
+    <img class="qr" src="{{ url_for('live_qr') }}" alt="QR" width="220" height="220">
+    <p class="scan">{{ t.scan }}</p>
+    <div class="share-url" dir="ltr">{{ live_url }}</div>
+    <div class="share-actions">
+      <button class="btn gold" id="copy-link" data-url="{{ live_url }}">{{ t.copy_link }}</button>
+      <a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/?text={{ (t.live_title ~ ' — ' ~ t.academy ~ ' ' ~ live_url)|urlencode }}">{{ t.whatsapp }}</a>
+      <a class="btn line" href="{{ url_for('live_qr', size=24, download=1) }}">⬇ {{ t.download_qr }}</a>
+      <a class="btn line" href="{{ url_for('live_poster') }}" target="_blank">🖨 {{ t.poster }}</a>
+    </div>
+  </aside>
+</section>
+{% endblock %}
