@@ -104,7 +104,10 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"   # filled by `manage.py collectstatic` (admin CSS etc.)
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
-    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
+    # production: file names get a content hash (style.3f9a1c.css), so every deploy's CSS/JS
+    # reaches visitors immediately and can be cached for a year; on your Mac: plain names
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage" if DEBUG
+                    else "whitenoise.storage.CompressedManifestStaticFilesStorage"},
 }
 WHITENOISE_USE_FINDERS = DEBUG
 
@@ -112,7 +115,6 @@ WHITENOISE_USE_FINDERS = DEBUG
 MEDIA_URL = "/media/"
 MEDIA_ROOT = Path(os.environ.get("MEDIA_ROOT") or BASE_DIR / "media")
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024   # bigger uploads are streamed to a temp file, not kept in memory
-WHITENOISE_MAX_AGE = 3600
 
 LOGGING = {
     "version": 1,
