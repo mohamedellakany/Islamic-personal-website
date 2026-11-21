@@ -4,7 +4,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ t.poster_h }} · {{ t.academy }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="{{ static('style.css') }}">
 <style>
   @page { size: A4; margin: 0 }
   body { background: #ddd }
@@ -32,7 +32,7 @@
   </header>
   <div class="body">
     <h1>{{ t.poster_h }}</h1>
-    <div class="qrbox"><img src="{{ url_for('live_qr', size=20) }}" alt="QR"></div>
+    <div class="qrbox"><img src="{{ url('live_qr', size=20) }}" alt="QR"></div>
     <p class="hint">📱 {{ t.poster_p }}</p>
     <p class="url" dir="ltr">{{ live_url }}</p>
   </div>

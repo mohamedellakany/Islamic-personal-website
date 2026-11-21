@@ -62,14 +62,14 @@
 
   {# SHARE + QR #}
   <aside class="share-card">
-    <img class="qr" src="{{ url_for('live_qr') }}" alt="QR" width="220" height="220">
+    <img class="qr" src="{{ url('live_qr') }}" alt="QR" width="220" height="220">
     <p class="scan">{{ t.scan }}</p>
     <div class="share-url" dir="ltr">{{ live_url }}</div>
     <div class="share-actions">
       <button class="btn gold" id="copy-link" data-url="{{ live_url }}">{{ t.copy_link }}</button>
       <a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/?text={{ (t.live_title ~ ' — ' ~ t.academy ~ ' ' ~ live_url)|urlencode }}">{{ t.whatsapp }}</a>
-      <a class="btn line" href="{{ url_for('live_qr', size=24, download=1) }}">⬇ {{ t.download_qr }}</a>
-      <a class="btn line" href="{{ url_for('live_poster') }}" target="_blank">🖨 {{ t.poster }}</a>
+      <a class="btn line" href="{{ url('live_qr', size=24, download=1) }}">⬇ {{ t.download_qr }}</a>
+      <a class="btn line" href="{{ url('live_poster') }}" target="_blank">🖨 {{ t.poster }}</a>
     </div>
   </aside>
 </section>

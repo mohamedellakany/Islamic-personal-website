@@ -4,3 +4,6 @@ __pycache__/
 deploy/.azure-app
 *.key
 .env
+data/db.sqlite3*
+staticfiles/
+media/

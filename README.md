@@ -1,24 +1,42 @@
 # Dr. Moustafa Kamel Academy — website
 
-Python (Flask) site for the YouTube channel https://www.youtube.com/@dr.moustafakamel508.
+Python (Django) site for the YouTube channel https://www.youtube.com/@dr.moustafakamel508.
 Layout: "Academy" (courses + progress). Palette: "Manuscript" (green, gold, cream).
 
 ## 1. Development (your Mac)
 ```bash
 cd ~/Downloads/Apps/dr-moustafa-kamel-site
-python3 -m venv .venv && .venv/bin/pip install -r requirements.txt   # first time only
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt   # first time / after requirements change
 bash dev.sh                                                         # start; Ctrl+C to stop
+.venv/bin/python manage.py createsuperuser                          # first time only: your local admin login
 ```
 Opens on http://127.0.0.1:5000 (or the next free port) and reloads when you save a file.
-Refresh lesson data from YouTube: `.venv/bin/python sync.py` (~70s).
+The first start creates the database `data/db.sqlite3` and loads every lesson from `data/channel.json`.
+Refresh views/durations and pick up anything missing from YouTube:
+`.venv/bin/python sync.py && .venv/bin/python manage.py import_channel` (~70s; never overwrites your admin edits).
 
 ## 2. Publish (Azure)
 ```bash
-bash deploy/azure_deploy.sh                                  # upload code + data, restart
-.venv/bin/python sync.py && bash deploy/azure_deploy.sh      # refresh lessons, then publish
+bash deploy/azure_deploy.sh                                  # upload code, restart
+bash deploy/azure_admin.sh                                   # once: set the /admin login (asks for a password)
 git add -A && git commit -m "…" && git push                  # save to GitHub
 ```
-Live site: https://drmoustafakamel-academy.azurewebsites.net · status: `/healthz`
+Live site: https://drmoustafakamel-academy.azurewebsites.net · admin: `/admin/` · status: `/healthz`
+
+On Azure the database is `/home/data/db.sqlite3`: it survives deploys and restarts, and on the very first
+start it is filled from `data/channel.json`. Lessons you add or edit in the admin live **only** there,
+so deploying from your Mac never overwrites them (your local `data/db.sqlite3` is a separate copy for testing).
+
+## Admin (`/admin/`)
+- **Lessons:** add, edit, hide/show, search, filter by course, type, or "own copy vs YouTube only".
+  A lesson can be in several courses ("In these courses" at the bottom of the lesson page).
+- **Video file:** upload an MP4 (H.264) and the site plays it instead of YouTube. Duration and picture are filled
+  in automatically (ffmpeg). Files go to `media/` on your Mac (never committed). **…or video address:** paste the
+  address of a copy stored elsewhere (e.g. Cloudflare R2). Neither = YouTube.
+- **Duration:** type `25:30` or `1:05:00`. **Lesson number:** sets the order inside the course.
+- **Hide instead of delete** a YouTube lesson: a deleted one can come back from the hourly YouTube check.
+- New lessons get a "New" badge for 14 days and go to the top of "Latest lessons".
+- Changes show on the site within a few seconds.
 
 ## 3. Your own live stream (Cloudflare Stream)
 1. Cloudflare dashboard → Stream → **Live inputs** → Create (turn on "Automatically record" if wanted).
@@ -34,15 +52,19 @@ The site asks Cloudflare `https://<customer>/<input>/lifecycle` every ~20s (fall
 HLS manifest). `OWN_LIVE_HLS` can point at any other HLS stream instead.
 
 ## Files
-- `sync.py` — fetches the channel catalog with yt-dlp, assigns each playlist a topic, parses lesson numbers.
-- `app.py` — routes: `/`, `/courses?cat=`, `/course/<playlist>`, `/watch/<video>?list=`, `/latest`, `/shorts`, `/search?q=`, `/about`, `/lang/<ar|en>`.
+- `academy/` — Django settings, URLs, and the Jinja setup the templates use (`url()`, `static()`, filters).
+- `catalog/models.py` — Course, Lesson, CourseLesson (the database tables). `catalog/admin.py` — the admin page.
+- `catalog/views.py` — pages: `/`, `/courses?cat=`, `/course/<id>`, `/watch/<id>?list=`, `/latest`, `/shorts`, `/search?q=`, `/about`, `/live`, `/lang/<ar|en>`.
+- `catalog/data.py` — builds the catalog from the database (cached in memory), search, saves new YouTube uploads.
+- `catalog/management/commands/` — `import_channel` (channel.json → database), `ensure_admin` (Azure login).
+- `sync.py` — fetches the channel catalog with yt-dlp into `data/channel.json`, assigns topics, parses lesson numbers.
 - `templates/` — Jinja pages; `static/style.css`, `static/app.js` (progress saved in the visitor's browser).
 - `designs.html` — the original 3 design concepts.
 
 ## Notes
 - Arabic is the default (RTL); the EN button switches the interface to English.
 - Search ignores Arabic diacritics and hamza/ta-marbuta variants, and accepts Arabic or Latin digits.
-- For production, run behind gunicorn: `pip install gunicorn && gunicorn -w 2 app:app`.
+- Production runs `gunicorn academy.wsgi` (Azure's startup command is set by `deploy/azure_deploy.sh`).
 
 ## Motion & transitions (`static/app.js`, bottom of `static/style.css`)
 - Page-to-page: View Transitions API crossfade; header stays fixed; the clicked thumbnail morphs into the course banner / video player.
@@ -52,24 +74,19 @@ HLS manifest). `OWN_LIVE_HLS` can point at any other HLS stream instead.
 - Scroll reveal, count-up stats, nav underline, animated mobile menu.
 - Browsers without View Transitions get simple fades; `prefers-reduced-motion` turns all motion off.
 
-Running it from your IDE
-1. Open the dr-moustafa-kamel-site folder.
-2. Set the Python interpreter to the project's virtual environment: dr-moustafa-kamel-site/.venv/bin/python.
-   - VS Code: Cmd+Shift+P → "Python: Select Interpreter" → choose .venv.
-   - PyCharm: Settings → Project → Python Interpreter → Add → Existing → choose .venv/bin/python.
-3. Run app.py, then open http://127.0.0.1:5000.
+## Running it from your IDE
+1. Open the folder and set the interpreter to `.venv/bin/python` (VS Code: Cmd+Shift+P → "Python: Select Interpreter").
+2. Run `manage.py` with the arguments `runserver` and the environment variable `DJANGO_DEBUG=1`, or just use `bash dev.sh`.
 
-If the port gets stuck again, run this in a terminal:
-lsof -ti tcp:5000 | xargs kill
-It finds whatever is using port 5000 and stops it. If it won't stop, use kill -9 instead of kill.
-
-On a Mac, port 5000 is sometimes taken by the system's AirPlay Receiver. In that case, either turn it off (System Settings → General → AirDrop & Handoff → AirPlay Receiver) or use a different port by changing the last line of app.py to app.run(debug=True, port=5001).
+If a port gets stuck: `lsof -ti tcp:5000 | xargs kill` (use `kill -9` if it won't stop). On a Mac, port 5000 is
+sometimes taken by AirPlay Receiver; `dev.sh` simply picks the next free port.
 
 
 ## Live YouTube feed (`feed.py`)
-Every hour the site reads the channel's public RSS feed (latest ~15 uploads) and merges new videos:
-new lessons appear in Latest + their course with a "New" badge, Shorts go to Shorts. Run a full
-`sync.py` occasionally (e.g. monthly) to pick up durations, new playlists and anything older than the feed.
+Every hour the site reads the channel's public RSS feed (latest ~15 uploads) and **saves new videos to the
+database**: they appear in Latest + their course with a "New" badge (Shorts go to Shorts), and you can edit them
+in the admin. Set `YOUTUBE_FEED=0` to switch this off. Lesson durations aren't in the feed: add them in the admin, or
+run `sync.py` + `manage.py import_channel` occasionally.
 Check status at `/healthz`.
 
 ## Live broadcast (`live.py`)

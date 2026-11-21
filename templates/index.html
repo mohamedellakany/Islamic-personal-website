@@ -7,12 +7,12 @@
       <span class="pill"><i></i> {{ t.pill }}</span>
       <h1>{{ t.hero1 }} <em>{{ t.hero2 }}</em> {{ t.hero3 }}</h1>
       <p>{{ t.hero_p }}</p>
-      <form class="search" action="{{ url_for('search') }}"><input name="q" placeholder="{{ t.search_ph }}"><button>{{ t.search }}</button></form>
+      <form class="search" action="{{ url('search') }}"><input name="q" placeholder="{{ t.search_ph }}"><button>{{ t.search }}</button></form>
     </div>
     {% if hero %}
     <div class="hero-card">
-      <a id="hero-link" href="{{ url_for('watch', vid=hero.id, list=hero.playlist) }}">
-        <img id="hero-img" src="{{ hero.id|thumb('hq') }}" alt="">
+      <a id="hero-link" href="{{ url('watch', hero.id, list=hero.playlist) }}">
+        <img id="hero-img" src="{{ hero|thumb('hq') }}" alt="">
         <div class="now"><span class="play">▶</span><div><b id="hero-label">{{ t.start_here }}</b><br><span id="hero-title" class="clamp">{{ hero.title }}</span></div></div>
       </a>
     </div>
@@ -31,10 +31,10 @@
 <section>
   <div class="wrap">
     <div data-filter>
-    <div class="head"><h2>{{ t.courses }}</h2><a data-filter-more href="{{ url_for('courses') }}">{{ t.all_courses }}</a></div>
+    <div class="head"><h2>{{ t.courses }}</h2><a data-filter-more href="{{ url('courses') }}">{{ t.all_courses }}</a></div>
     <div class="tabs">
-      <a class="on" data-cat="" href="{{ url_for('courses') }}">{{ t.all }}</a>
-      {% for key, c in CATS.items() if cat_counts.get(key) %}<a data-cat="{{ key }}" href="{{ url_for('courses', cat=key) }}">{{ c[lang] }}</a>{% endfor %}
+      <a class="on" data-cat="" href="{{ url('courses') }}">{{ t.all }}</a>
+      {% for key, c in CATS.items() if cat_counts.get(key) %}<a data-cat="{{ key }}" href="{{ url('courses', cat=key) }}">{{ c[lang] }}</a>{% endfor %}
     </div>
     <div class="grid g3" data-filter-grid data-limit="6">{% for p in courses %}{{ course_card(p, hidden=loop.index > 6) }}{% endfor %}</div>
     </div>
@@ -43,7 +43,7 @@
 
 <section class="alt">
   <div class="wrap">
-    <div class="head"><h2>{{ t.latest }}</h2><a href="{{ url_for('latest') }}">{{ t.view_all }}</a></div>
+    <div class="head"><h2>{{ t.latest }}</h2><a href="{{ url('latest') }}">{{ t.view_all }}</a></div>
     <div class="grid g4">{% for v in latest %}{{ video_card(v) }}{% endfor %}</div>
   </div>
 </section>
@@ -51,7 +51,7 @@
 {% if shorts %}
 <section>
   <div class="wrap">
-    <div class="head"><h2>{{ t.shorts }}</h2><a href="{{ url_for('shorts') }}">{{ t.more }}</a></div>
+    <div class="head"><h2>{{ t.shorts }}</h2><a href="{{ url('shorts') }}">{{ t.more }}</a></div>
     <div class="shorts-row">{% for v in shorts %}{{ short_card(v) }}{% endfor %}</div>
   </div>
 </section>

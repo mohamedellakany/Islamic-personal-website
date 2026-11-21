@@ -4,7 +4,7 @@
 {% block content %}
 <section class="page-head pattern">
   <div class="wrap course-head">
-    <img class="course-banner" data-vt-media style="view-transition-name: media" src="{{ p.videos[0].id|thumb('hq') }}" alt="">
+    <img class="course-banner" data-vt-media style="view-transition-name: media" src="{{ p.videos[0]|thumb('hq') }}" alt="">
     <div class="course-info">
       <span class="chip chip-{{ p.category }}">{{ CATS[p.category][lang] }}</span>
       <h1>{{ p.title }}</h1>
@@ -12,7 +12,7 @@
       <div class="bar big" data-progress="{{ p.id }}" data-count="{{ p.count }}"><i style="width:0"></i></div>
       <small class="progress-text light" data-progress-text="{{ p.id }}" data-count="{{ p.count }}">{{ t.not_started }}</small>
     </div>
-    <a class="btn gold" id="resume" href="{{ url_for('watch', vid=p.videos[0].id, list=p.id) }}" data-pl="{{ p.id }}" data-first="{{ p.videos[0].id }}">▶ {{ t.lesson }} 1</a>
+    <a class="btn gold" id="resume" href="{{ url('watch', p.videos[0].id, list=p.id) }}" data-pl="{{ p.id }}" data-first="{{ p.videos[0].id }}">▶ {{ t.lesson }} 1</a>
   </div>
 </section>
 <section>
@@ -22,9 +22,9 @@
     <ol class="lesson-list" data-pl="{{ p.id }}">
       {% for v in p.videos %}
       <li data-vid="{{ v.id }}">
-        <a href="{{ url_for('watch', vid=v.id, list=p.id) }}">
+        <a href="{{ url('watch', v.id, list=p.id) }}">
           <span class="n">{{ v.num or loop.index }}</span>
-          <img loading="lazy" src="{{ v.id|thumb }}" alt="">
+          <img loading="lazy" src="{{ v|thumb }}" alt="">
           <span class="lt">{{ v.title }}{% if v.new %} <span class="new-badge inline">{{ t.new }}</span>{% endif %}</span>
           <span class="d">{{ v.duration|dur }}</span>
           <span class="tick">✓</span>

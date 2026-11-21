@@ -47,7 +47,7 @@
 <section class="page-head pattern"><div class="wrap"><h1>{{ t.about_h }}</h1></div></section>
 <section>
   <div class="wrap about">
-    <img class="about-img" src="{{ url_for('static', filename='img/dr-moustafa.jpg') }}" alt="{{ bio.name }}" width="200" height="200">
+    <img class="about-img" src="{{ static('img/dr-moustafa.jpg') }}" alt="{{ bio.name }}" width="200" height="200">
     <div class="about-text">
       <h2 class="bio-name">{{ bio.name }}</h2>
       <p class="bio-role">{{ bio.role }}</p>

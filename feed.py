@@ -2,10 +2,11 @@
 
 YouTube's public RSS feed lists the channel's latest ~15 uploads. Every hour we
 read it, find videos the site doesn't know yet, decide whether each is a Short,
-and work out which course (playlist) it belongs to. app.py merges the result
-into the catalog. Only the standard library is used; failures are silent and
-the site simply keeps showing the last good data.
+and work out which course (playlist) it belongs to. catalog/data.py saves them
+to the database (they then show up in the admin like any other lesson). Only the
+standard library is used; failures are silent and the site keeps its current data.
 """
+import os
 import re
 import threading
 import time
@@ -16,7 +17,6 @@ import xml.etree.ElementTree as ET
 from sync import lesson_number
 
 REFRESH_SECONDS = 60 * 60          # how often to re-read the feed
-FIRST_FETCH_TIMEOUT = 4            # first request after start waits at most this long
 HTTP_TIMEOUT = 8
 FEED_URL = "https://www.youtube.com/feeds/videos.xml?{kind}_id={id}"
 NS = {"a": "http://www.w3.org/2005/Atom", "yt": "http://www.youtube.com/xml/schemas/2015",
@@ -24,7 +24,7 @@ NS = {"a": "http://www.w3.org/2005/Atom", "yt": "http://www.youtube.com/xml/sche
 UA = {"User-Agent": "Mozilla/5.0 (academy-site feed reader)", "Accept-Language": "ar",
       "Cookie": "SOCS=CAI"}  # skip the EU cookie-consent redirect
 
-_state = {"fetched_at": 0, "items": [], "version": 0, "error": None, "refreshing": False}
+_state = {"fetched_at": 0, "items": [], "error": None, "refreshing": False}
 _lock = threading.Lock()
 _short_cache: dict[str, bool] = {}
 
@@ -102,11 +102,11 @@ def guess_playlist(video: dict, playlists: list[dict]) -> str | None:
 
 
 # ------------------------------------------------------------------ refresh
-def _refresh(base: dict) -> None:
+def _refresh(base: dict, on_new) -> None:
     try:
         channel_id = base["channel"]["id"]
-        known = {v["id"] for p in base["playlists"] for v in p["videos"]}
-        known |= {v["id"] for v in base.get("latest", []) + base.get("shorts", [])}
+        known = base.get("all_ids") or {v["id"] for p in base["playlists"] for v in p["videos"]}
+        known = known | {v["id"] for v in base.get("latest", []) + base.get("shorts", [])}
         fresh = [v for v in _parse(_get(FEED_URL.format(kind="channel", id=channel_id))) if v["id"] not in known]
 
         if fresh:
@@ -124,13 +124,10 @@ def _refresh(base: dict) -> None:
                 v["short"] = is_short(v["id"])
                 v["num"] = lesson_number(v["title"])
                 v["playlist"] = None if v["short"] else (in_playlist.get(v["id"]) or guess_playlist(v, base["playlists"]))
-                v["new"] = True
+            on_new(fresh)
 
         with _lock:
-            changed = [v["id"] for v in fresh] != [v["id"] for v in _state["items"]]
             _state.update(items=fresh, fetched_at=time.time(), error=None)
-            if changed:
-                _state["version"] += 1
     except Exception as ex:
         with _lock:
             _state.update(fetched_at=time.time(), error=f"{type(ex).__name__}: {ex}")
@@ -138,22 +135,18 @@ def _refresh(base: dict) -> None:
         _state["refreshing"] = False
 
 
-def new_videos(base: dict) -> tuple[int, list[dict]]:
-    """Return (version, new items). Refreshes in the background when stale;
-    the very first call waits briefly so a fresh start already shows new lessons."""
-    first = _state["fetched_at"] == 0
+def poll(base: dict, on_new) -> None:
+    """Re-read the feed in the background when it is older than REFRESH_SECONDS;
+    on_new(videos) is called with uploads the site doesn't have yet."""
+    if os.environ.get("YOUTUBE_FEED", "1") == "0" or not base.get("channel", {}).get("id"):
+        return
     if time.time() - _state["fetched_at"] > REFRESH_SECONDS and not _state["refreshing"]:
         _state["refreshing"] = True
-        t = threading.Thread(target=_refresh, args=(base,), daemon=True)
-        t.start()
-        if first:
-            t.join(FIRST_FETCH_TIMEOUT)
-    with _lock:
-        return _state["version"], list(_state["items"])
+        threading.Thread(target=_refresh, args=(base, on_new), daemon=True).start()
 
 
 def status() -> dict:
     with _lock:
-        return {"fetched_at": int(_state["fetched_at"]), "new_videos": len(_state["items"]),
+        return {"fetched_at": int(_state["fetched_at"]), "new_videos_last_check": len(_state["items"]),
                 "titles": [v["title"] for v in _state["items"]], "error": _state["error"],
                 "refresh_seconds": REFRESH_SECONDS}

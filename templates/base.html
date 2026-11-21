@@ -7,7 +7,7 @@
 <meta name="description" content="{{ t.hero_p }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="{{ static('style.css') }}">
 <script>
   // Flags set before first paint: JS on, and whether the browser supports cross-page View Transitions.
   document.documentElement.classList.add('js', 'onpagereveal' in window ? 'vt' : 'no-vt');
@@ -22,32 +22,32 @@
 <div id="loader" aria-hidden="true"></div>
 <header class="topbar">
   <div class="wrap bar-in">
-    <a class="logo" href="{{ url_for('index') }}">
+    <a class="logo" href="{{ url('index') }}">
       {% if ch.avatar %}<img src="{{ ch.avatar }}" alt="">{% else %}<span class="logo-mark">م</span>{% endif %}
       <span>{{ t.academy }}</span>
     </a>
     <button class="menu-btn" aria-label="menu" onclick="document.body.classList.toggle('nav-open')">☰</button>
     <nav class="nav">
-      <a class="live-link{{ ' on' if live.state == 'live' }}" href="{{ url_for('live_page') }}"><i class="live-dot"></i>{{ t.live }}</a>
-      <a href="{{ url_for('courses') }}">{{ t.courses }}</a>
-      <a href="{{ url_for('latest') }}">{{ t.latest }}</a>
-      <a href="{{ url_for('shorts') }}">{{ t.shorts }}</a>
-      <a href="{{ url_for('about') }}">{{ t.about }}</a>
-      <a class="lang" data-lang-switch href="{{ url_for('set_lang', code='en' if lang == 'ar' else 'ar') }}">{{ 'EN' if lang == 'ar' else 'عربي' }}</a>
+      <a class="live-link{{ ' on' if live.state == 'live' }}" href="{{ url('live_page') }}"><i class="live-dot"></i>{{ t.live }}</a>
+      <a href="{{ url('courses') }}">{{ t.courses }}</a>
+      <a href="{{ url('latest') }}">{{ t.latest }}</a>
+      <a href="{{ url('shorts') }}">{{ t.shorts }}</a>
+      <a href="{{ url('about') }}">{{ t.about }}</a>
+      <a class="lang" data-lang-switch href="{{ url('set_lang', 'en' if lang == 'ar' else 'ar') }}">{{ 'EN' if lang == 'ar' else 'عربي' }}</a>
       <a class="cta" href="{{ ch.url or '#' }}?sub_confirmation=1" target="_blank" rel="noopener">{{ t.subscribe }}</a>
     </nav>
   </div>
 </header>
 
-{% if request.endpoint != 'live_page' %}
-<a id="live-banner" class="live-banner" href="{{ url_for('live_page') }}"{% if live.state != 'live' %} hidden{% endif %}>
+{% if endpoint != 'live_page' %}
+<a id="live-banner" class="live-banner" href="{{ url('live_page') }}"{% if live.state != 'live' %} hidden{% endif %}>
   <span class="live-pill"><i class="live-dot"></i>{{ t.on_air }}</span>
   <b>{{ t.live_banner }}</b><span class="watch">{{ t.watch_live }}</span>
 </a>
 {% endif %}
 <main>
 {% if not_found %}
-  <section class="wrap empty"><h1>404</h1><p><a href="{{ url_for('index') }}">{{ t.home }}</a></p></section>
+  <section class="wrap empty"><h1>404</h1><p><a href="{{ url('index') }}">{{ t.home }}</a></p></section>
 {% else %}
   {% if not has_data %}<div class="wrap warn">{{ t.nodata }}</div>{% endif %}
   {% block content %}{% endblock %}
@@ -59,16 +59,16 @@
   <div class="wrap foot-in">
     <div><b class="foot-logo">{{ t.academy }}</b><p>{{ t.ayah_ref }} — <span class="ayah-inline">﴿{{ t.ayah }}﴾</span></p></div>
     <div class="foot-links">
-      <a href="{{ url_for('courses') }}">{{ t.courses }}</a>
-      <a href="{{ url_for('latest') }}">{{ t.latest }}</a>
-      <a href="{{ url_for('shorts') }}">{{ t.shorts }}</a>
+      <a href="{{ url('courses') }}">{{ t.courses }}</a>
+      <a href="{{ url('latest') }}">{{ t.latest }}</a>
+      <a href="{{ url('shorts') }}">{{ t.shorts }}</a>
       <a href="{{ ch.url or '#' }}" target="_blank" rel="noopener">YouTube</a>
     </div>
   </div>
   <div class="wrap copy">© {{ ch.name_ar if lang == 'ar' else ch.name }} · {{ t.footer }}</div>
 </footer>
 <script>window.I18N = {copied: "{{ t.copied }}", copy: "{{ t.copy_link }}", completed: "{{ t.completed }}", of: "{{ t.of }}", not_started: "{{ t.not_started }}", mark: "{{ t.mark }}", marked: "{{ t.marked }}", continue: "{{ t.continue }}", lesson: "{{ t.lesson }}"};</script>
-<script src="{{ url_for('static', filename='app.js') }}"></script>
+<script src="{{ static('app.js') }}"></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

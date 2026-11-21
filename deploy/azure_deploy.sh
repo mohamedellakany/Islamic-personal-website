@@ -51,19 +51,31 @@ if ! az webapp show -g "$RG" -n "$APP" >/dev/null 2>&1; then
   fi
 
   az webapp create -g "$RG" -p "$PLAN" -n "$APP" --runtime "PYTHON:3.12" -o none
-  az webapp config set -g "$RG" -n "$APP" -o none \
-    --startup-file "gunicorn --bind=0.0.0.0:8000 --workers 2 --timeout 120 app:app"
-  az webapp config appsettings set -g "$RG" -n "$APP" -o none \
-    --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true
 fi
+
+# Django: on every start apply database changes, load the catalog the first time,
+# create/update the admin login (deploy/azure_admin.sh), then start the site.
+# The database lives in /home/data, which Azure keeps across deploys and restarts.
+echo "→ Configuring startup + settings…"
+az webapp config set -g "$RG" -n "$APP" -o none --startup-file "python manage.py migrate --noinput \
+&& python manage.py import_channel --if-empty && python manage.py ensure_admin \
+&& python manage.py collectstatic --noinput -v0 \
+&& gunicorn --bind=0.0.0.0:8000 --workers 2 --timeout 120 academy.wsgi"
+SETTINGS=(SCM_DO_BUILD_DURING_DEPLOYMENT=true DISABLE_COLLECTSTATIC=true DB_PATH=/home/data/db.sqlite3 MEDIA_ROOT=/home/media)
+if [ "$(az webapp config appsettings list -g "$RG" -n "$APP" --query "length([?name=='DJANGO_SECRET_KEY'])" -o tsv)" = "0" ]; then
+  SETTINGS+=(DJANGO_SECRET_KEY="$(python3 -c 'import secrets; print(secrets.token_urlsafe(50))')")
+fi
+az webapp config appsettings set -g "$RG" -n "$APP" -o none --settings "${SETTINGS[@]}"
+az webapp update -g "$RG" -n "$APP" --https-only true -o none   # http:// → https:// (admin login is only sent encrypted)
 
 echo "→ Packaging (code + data/channel.json)…"
 ZIP="$(mktemp -d)/site.zip"
-zip -qr "$ZIP" . -x '.venv/*' '*__pycache__*' '*.DS_Store' 'deploy/.azure-app' '.git/*'
+zip -qr "$ZIP" . -x '.venv/*' '*__pycache__*' '*.DS_Store' 'deploy/.azure-app' '.git/*' '.env' 'data/db.sqlite3*' 'staticfiles/*' 'media/*'
 
 echo "→ Uploading + installing requirements on Azure (2–4 min)…"
 az webapp deploy -g "$RG" -n "$APP" --src-path "$ZIP" --type zip -o none
 
 echo ""
 echo "✅ Live at: https://$APP.azurewebsites.net"
+echo "   Admin:   https://$APP.azurewebsites.net/admin/   (set the login once: bash deploy/azure_admin.sh)"
 echo "   Logs:    az webapp log tail -g $RG -n $APP"

@@ -8,6 +8,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 [ -x .venv/bin/python ] || { echo "First time: python3 -m venv .venv && .venv/bin/pip install -r requirements.txt"; exit 1; }
+.venv/bin/python -c "import django" 2>/dev/null || { echo "Install the new requirements first:  .venv/bin/pip install -r requirements.txt"; exit 1; }
 # Local settings (Cloudflare etc.) from .env, if present
 if [ -f .env ]; then set -a; source .env; set +a; fi
 if [ -n "${CF_STREAM_CUSTOMER:-}" ] && [ -n "${CF_LIVE_INPUT_ID:-}" ]; then
@@ -25,6 +26,7 @@ cat <<INFO
 
 ══════════════════════════════════════════════════════════════
  🌐 Website:    http://127.0.0.1:$PORT
+    Admin:      http://127.0.0.1:$PORT/admin/   (first time: .venv/bin/python manage.py createsuperuser)
     Live page:  http://127.0.0.1:$PORT/live
     Other devices on this Wi-Fi:  http://$IP:$PORT
  📡 Live source: $LIVE_INFO
@@ -33,4 +35,7 @@ cat <<INFO
 
 INFO
 
-HOST=0.0.0.0 PORT=$PORT exec .venv/bin/python app.py
+export DJANGO_DEBUG=1
+.venv/bin/python manage.py migrate --noinput -v0           # create/update the database (data/db.sqlite3)
+.venv/bin/python manage.py import_channel --if-empty       # first time only: load the lessons
+exec .venv/bin/python manage.py runserver "0.0.0.0:$PORT"

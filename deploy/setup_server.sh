@@ -27,7 +27,7 @@ sudo cp "$APP_DIR/deploy/mk-sync.timer" /etc/systemd/system/mk-sync.timer
 sed -e "s#__APP_DIR__#$APP_DIR#g" "$APP_DIR/deploy/nginx.conf" | sudo tee /etc/nginx/sites-available/mk-academy >/dev/null
 sudo ln -sf /etc/nginx/sites-available/mk-academy /etc/nginx/sites-enabled/mk-academy
 sudo rm -f /etc/nginx/sites-enabled/default
-chmod o+x "$HOME" "$APP_DIR" "$APP_DIR/static" 2>/dev/null || true   # let nginx read /static
+chmod o+x "$HOME" "$APP_DIR" 2>/dev/null || true   # let nginx read /static (staticfiles/)
 
 # Oracle Ubuntu images block everything except SSH in iptables — open 80 + 443
 for port in 80 443; do
@@ -41,6 +41,16 @@ if [ ! -f "$APP_DIR/data/channel.json" ]; then
   echo "→ No data/channel.json found, syncing from YouTube (≈1–2 min)…"
   "$APP_DIR/.venv/bin/python" "$APP_DIR/sync.py" || echo "!! Sync failed (YouTube may block cloud IPs). Upload data/channel.json from your Mac instead — see README."
 fi
+
+# Django: secret key (once), database, admin styles
+grep -q '^DJANGO_SECRET_KEY=' "$APP_DIR/.env" 2>/dev/null || \
+  echo "DJANGO_SECRET_KEY=$(python3 -c 'import secrets; print(secrets.token_urlsafe(50))')" >> "$APP_DIR/.env"
+set -a; source "$APP_DIR/.env"; set +a
+cd "$APP_DIR"
+.venv/bin/python manage.py migrate --noinput
+.venv/bin/python manage.py import_channel --if-empty
+.venv/bin/python manage.py collectstatic --noinput -v0
+echo "→ Create your admin login:  cd $APP_DIR && set -a && source .env && set +a && .venv/bin/python manage.py createsuperuser"
 
 sudo systemctl daemon-reload
 sudo systemctl enable --now mk-academy mk-sync.timer

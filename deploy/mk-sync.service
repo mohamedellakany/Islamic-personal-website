@@ -5,4 +5,5 @@ Description=Refresh YouTube channel data for the academy site
 Type=oneshot
 User=__APP_USER__
 WorkingDirectory=__APP_DIR__
-ExecStart=__APP_DIR__/.venv/bin/python sync.py
+EnvironmentFile=__APP_DIR__/.env
+ExecStart=/bin/sh -c '.venv/bin/python sync.py && .venv/bin/python manage.py import_channel'
