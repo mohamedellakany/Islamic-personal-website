@@ -20,6 +20,7 @@ urlpatterns = [
     path("about", views.about, name="about"),
     path("live", views.live_page, name="live_page"),
     path("api/live", views.api_live, name="api_live"),
+    path("api/lesson/<str:vid>", views.api_lesson, name="api_lesson"),
     path("live/qr.png", views.live_qr, name="live_qr"),
     path("live/poster", views.live_poster, name="live_poster"),
     path("healthz", views.healthz, name="healthz"),

@@ -15,6 +15,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 
 import feed
 import live
+from academy.jinja2 import thumb
 from .data import data, norm, search_index
 from .i18n import CATEGORIES, T
 from .models import Lesson
@@ -88,10 +89,8 @@ def watch(request, vid):
     if not re.fullmatch(r"[\w-]{11}", vid):
         raise Http404
     v, p = find_video(request, vid)
-    if not v:
-        if vid in data()["all_ids"]:   # a hidden lesson
-            raise Http404
-        v = {"id": vid, "yt": vid, "title": "", "num": None}   # e.g. a brand-new YouTube upload
+    if not v:   # deleted or hidden (new YouTube uploads are saved to the database by the hourly check)
+        raise Http404
     prev_v = next_v = None
     if p:
         ids = [x["id"] for x in p["videos"]]
@@ -99,6 +98,17 @@ def watch(request, vid):
         prev_v = p["videos"][i - 1] if i > 0 else None
         next_v = p["videos"][i + 1] if i + 1 < len(ids) else None
     return render(request, "watch.html", v=v, p=p, prev_v=prev_v, next_v=next_v)
+
+
+def api_lesson(request, vid):
+    """Used by the home page "continue where you left off" card: is the lesson still there?"""
+    v, p = find_video(request, vid)
+    if not v:
+        return JsonResponse({"ok": False}, status=404)
+    pid = request.GET.get("list") if p and request.GET.get("list") == p["id"] else (p["id"] if p else None)
+    return JsonResponse({"ok": True, "title": v["title"], "thumb": thumb(v, "hq"),
+                         "url": f"/watch/{v['id']}" + (f"?list={pid}" if pid else "")},
+                        json_dumps_params={"ensure_ascii": False})
 
 
 def latest(request):

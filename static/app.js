@@ -60,12 +60,25 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("mark")?.addEventListener("click", (e) => toggleDone(e.target.dataset.vid, e.target.dataset.pl));
 
   // Home hero: "continue where you left off"
+  // Only shown when that lesson still exists; a deleted/hidden one is forgotten and
+  // the card keeps showing the latest lesson. The picture is swapped in once loaded.
   const last = store().last, link = document.getElementById("hero-link");
-  if (last && link) {
-    link.href = `/watch/${last.vid}` + (last.pl ? `?list=${last.pl}` : "");
-    document.getElementById("hero-img").src = `https://i.ytimg.com/vi/${last.vid}/hqdefault.jpg`;
-    document.getElementById("hero-label").textContent = L.continue;
-    document.getElementById("hero-title").textContent = last.title;
+  if (last && last.vid && link) {
+    fetch(`/api/lesson/${encodeURIComponent(last.vid)}` + (last.pl ? `?list=${encodeURIComponent(last.pl)}` : ""))
+      .then((r) => (r.status === 404 ? null : r.ok ? r.json() : undefined))
+      .then((info) => {
+        if (info === null) { const s = store(); s.last = null; save(s); return; }   // lesson is gone
+        if (!info) return;                                                           // network error: leave as is
+        const img = new Image();
+        img.onload = () => {
+          link.href = info.url;
+          document.getElementById("hero-img").src = info.thumb;
+          document.getElementById("hero-label").textContent = L.continue;
+          document.getElementById("hero-title").textContent = info.title;
+        };
+        img.src = info.thumb;
+      })
+      .catch(() => {});
   }
 });
 

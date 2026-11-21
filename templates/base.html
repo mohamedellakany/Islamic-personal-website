@@ -51,7 +51,13 @@
 {% endif %}
 <main>
 {% if not_found %}
-  <section class="wrap empty"><h1>404</h1><p><a href="{{ url('index') }}">{{ t.home }}</a></p></section>
+  <section class="wrap empty gone">
+    <div class="gone-icon" aria-hidden="true">؟</div>
+    <h1>{{ t.gone_h }}</h1>
+    <p class="muted">{{ t.gone_p }}</p>
+    <form class="search" action="{{ url('search') }}"><input type="search" name="q" placeholder="{{ t.search_ph }}"><button>{{ t.search }}</button></form>
+    <div class="actions"><a class="btn gold" href="{{ url('latest') }}">{{ t.latest }}</a><a class="btn line" href="{{ url('index') }}">{{ t.home }}</a></div>
+  </section>
 {% else %}
   {% if not has_data %}<div class="wrap warn">{{ t.nodata }}</div>{% endif %}
   {% block content %}{% endblock %}

@@ -16,6 +16,8 @@ from django.core.files.base import ContentFile
 
 from django.db import models
 from django.db.models import Max
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.utils import timezone
 
 CATEGORY_CHOICES = [
@@ -154,3 +156,11 @@ class CourseLesson(models.Model):
             self.position = (CourseLesson.objects.filter(course_id=self.course_id)
                              .aggregate(m=Max("position"))["m"] or 0) + 1
         super().save(*args, **kwargs)
+
+
+@receiver(post_delete, sender=Lesson)
+def delete_lesson_files(sender, instance, **kwargs):
+    """Deleting a lesson also deletes its uploaded video and picture (not YouTube's)."""
+    for f in (instance.video_file, instance.thumbnail):
+        if f:
+            f.delete(save=False)
