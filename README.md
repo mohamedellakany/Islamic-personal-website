@@ -3,6 +3,13 @@
 Python (Flask) site for the YouTube channel https://www.youtube.com/@dr.moustafakamel508.
 Layout: "Academy" (courses + progress). Palette: "Manuscript" (green, gold, cream).
 
+## Develop (one command)
+```bash
+bash dev.sh            # site with auto-reload + phone live-stream server; prints the Larix URL
+bash dev.sh --no-live  # site only
+```
+Picks a free port automatically (5000, 5001, …). Ctrl+C stops everything.
+
 ## Run
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt   # first time only
