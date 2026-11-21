@@ -5,10 +5,9 @@ Layout: "Academy" (courses + progress). Palette: "Manuscript" (green, gold, crea
 
 ## Develop (one command)
 ```bash
-bash dev.sh            # site with auto-reload + phone live-stream server; prints the Larix URL
-bash dev.sh --no-live  # site only
+bash dev.sh            # site with auto-reload on http://127.0.0.1:5000 (or the next free port)
 ```
-Picks a free port automatically (5000, 5001, …). Ctrl+C stops everything.
+Ctrl+C stops it.
 
 ## Run
 ```bash
@@ -64,15 +63,11 @@ A red "Live" badge and a site-wide banner appear on every page while on air.
 QR code: `/live/qr.png` (add `?download=1&size=24` for a large file), printable A4 poster: `/live/poster`.
 Set `SITE_URL` if you move to a custom domain; `LIVE_CHANNEL_ID` can point at another channel for testing.
 
-## Your own live stream, free test (`live-test/`)
-Phone camera → this Mac → website, no YouTube or paid service. Needs `brew install mediamtx`
-(cloudflared for the public link) and the free **Larix Broadcaster** app on the phone (same Wi-Fi).
-```bash
-bash live-test/start.sh            # local test; prints the Larix URL + how to run the site
-bash live-test/start.sh --public   # free public https link, Azure site shows the stream; Ctrl+C removes it
-```
-The site plays any HLS stream set in `OWN_LIVE_HLS` and prefers it over YouTube while it's live,
-so a paid service (e.g. Cloudflare Stream) later is just a different `OWN_LIVE_HLS` value.
+## Your own live stream (Cloudflare Stream)
+Set `OWN_LIVE_HLS` to the stream's HLS address (Azure: App Service → Configuration, or
+`az webapp config appsettings set … --settings OWN_LIVE_HLS=…`). While that stream is live, `/live`
+plays it (hls.js; native HLS on Safari) instead of YouTube, with the same badge, banner and QR code.
+Locally: `OWN_LIVE_HLS=https://… bash dev.sh`.
 
 ## Deploy
 - **Azure App Service (free F1)** — live at https://drmoustafakamel-academy.azurewebsites.net

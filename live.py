@@ -24,9 +24,9 @@ _state = {"state": "unknown", "source": "youtube", "video_id": None, "title": No
 
 
 def own_stream_live(hls_url: str) -> bool:
-    """Your own stream (phone → MediaMTX / Cloudflare …): live when its HLS playlist answers."""
+    """Your own stream (e.g. Cloudflare Stream): live when its HLS playlist answers."""
     try:
-        # MediaMTX first redirects with a cookie check, so keep cookies across the redirect
+        # some streaming servers redirect once with a cookie check, so keep cookies across redirects
         opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor())
         with opener.open(urllib.request.Request(hls_url, headers={"User-Agent": "academy-site"}), timeout=6) as r:
             return r.status == 200 and b"#EXTM3U" in r.read(4096)

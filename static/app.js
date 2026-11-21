@@ -279,7 +279,7 @@ const liveRoot = () => document.getElementById("live-root");
 
 function show(id, on) { const el = document.getElementById(id); if (el) el.hidden = !on; }
 
-// ---- own stream (phone → MediaMTX/Cloudflare → HLS) ----
+// ---- own stream (e.g. Cloudflare Stream → HLS) ----
 let hls = null;
 function startOwn(url) {
   const v = document.getElementById("own-player");

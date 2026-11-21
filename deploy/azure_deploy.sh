@@ -59,7 +59,7 @@ fi
 
 echo "→ Packaging (code + data/channel.json)…"
 ZIP="$(mktemp -d)/site.zip"
-zip -qr "$ZIP" . -x '.venv/*' '*__pycache__*' '*.DS_Store' 'deploy/.azure-app' 'live-test/*' '.git/*'
+zip -qr "$ZIP" . -x '.venv/*' '*__pycache__*' '*.DS_Store' 'deploy/.azure-app' '.git/*'
 
 echo "→ Uploading + installing requirements on Azure (2–4 min)…"
 az webapp deploy -g "$RG" -n "$APP" --src-path "$ZIP" --type zip -o none
