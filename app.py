@@ -370,8 +370,10 @@ def live_poster():
 def healthz():
     """Quick check that the site + live feed are working."""
     d = data()
+    cf = live.cloudflare()
     return jsonify(ok=True, playlists=len(d["playlists"]), latest=len(d.get("latest", [])), feed=feed.status(),
-                   live=live_status())
+                   live=live_status(), cloudflare={"configured": bool(cf), "lifecycle": cf and cf["lifecycle"],
+                                                    "token_set": bool(os.environ.get("CF_API_TOKEN"))})
 
 
 @app.route("/lang/<code>")

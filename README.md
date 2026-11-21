@@ -3,19 +3,35 @@
 Python (Flask) site for the YouTube channel https://www.youtube.com/@dr.moustafakamel508.
 Layout: "Academy" (courses + progress). Palette: "Manuscript" (green, gold, cream).
 
-## Develop (one command)
+## 1. Development (your Mac)
 ```bash
-bash dev.sh            # site with auto-reload on http://127.0.0.1:5000 (or the next free port)
-```
-Ctrl+C stops it.
-
-## Run
-```bash
+cd ~/Downloads/Apps/dr-moustafa-kamel-site
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt   # first time only
-.venv/bin/python sync.py      # pull playlists/videos/shorts from YouTube → data/channel.json (~70s)
-.venv/bin/python app.py       # http://127.0.0.1:5000
+bash dev.sh                                                         # start; Ctrl+C to stop
 ```
-Re-run `sync.py` anytime (e.g. daily via cron) to pick up new lessons; the app reloads the data automatically.
+Opens on http://127.0.0.1:5000 (or the next free port) and reloads when you save a file.
+Refresh lesson data from YouTube: `.venv/bin/python sync.py` (~70s).
+
+## 2. Publish (Azure)
+```bash
+bash deploy/azure_deploy.sh                                  # upload code + data, restart
+.venv/bin/python sync.py && bash deploy/azure_deploy.sh      # refresh lessons, then publish
+git add -A && git commit -m "…" && git push                  # save to GitHub
+```
+Live site: https://drmoustafakamel-academy.azurewebsites.net · status: `/healthz`
+
+## 3. Your own live stream (Cloudflare Stream)
+1. Cloudflare dashboard → Stream → **Live inputs** → Create (turn on "Automatically record" if wanted).
+2. `cp .env.example .env` and fill in `CF_STREAM_CUSTOMER` (customer-xxxx.cloudflarestream.com) and
+   `CF_LIVE_INPUT_ID`. `.env` is never committed. `CF_API_TOKEN` only if the status check asks for one.
+3. Test locally: `bash dev.sh` (shows "Live source: Cloudflare…"), go live, open `/live`.
+4. Turn it on for the public site: `bash deploy/cloudflare_live.sh` (`--off` to remove).
+
+Broadcast with any RTMPS app (OBS, Prism Live Studio, …) using the input's RTMPS URL + stream key
+(keep the key secret). While the input is live, `/live` plays it (hls.js) instead of YouTube, with the
+on-air banner, badge and QR code; when it stops the page returns to YouTube/offline by itself.
+The site asks Cloudflare `https://<customer>/<input>/lifecycle` every ~20s (falls back to probing the
+HLS manifest). `OWN_LIVE_HLS` can point at any other HLS stream instead.
 
 ## Files
 - `sync.py` — fetches the channel catalog with yt-dlp, assigns each playlist a topic, parses lesson numbers.
@@ -62,12 +78,6 @@ stream is scheduled, and an offline message otherwise (checked every ~45s; pages
 A red "Live" badge and a site-wide banner appear on every page while on air.
 QR code: `/live/qr.png` (add `?download=1&size=24` for a large file), printable A4 poster: `/live/poster`.
 Set `SITE_URL` if you move to a custom domain; `LIVE_CHANNEL_ID` can point at another channel for testing.
-
-## Your own live stream (Cloudflare Stream)
-Set `OWN_LIVE_HLS` to the stream's HLS address (Azure: App Service → Configuration, or
-`az webapp config appsettings set … --settings OWN_LIVE_HLS=…`). While that stream is live, `/live`
-plays it (hls.js; native HLS on Safari) instead of YouTube, with the same badge, banner and QR code.
-Locally: `OWN_LIVE_HLS=https://… bash dev.sh`.
 
 ## Deploy
 - **Azure App Service (free F1)** — live at https://drmoustafakamel-academy.azurewebsites.net
